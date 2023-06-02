@@ -5,8 +5,7 @@ The structure for this repo will be as follows:
 
 * dev_code/
     + directory containing the "best" working code for various DJI Tello related demos
-  |
-  --- quick_tests/
+* dev_code/quick_tests/
     + quick python scripts to test very minor functionalities
 
 * old_code/
