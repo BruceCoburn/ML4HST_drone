@@ -1,5 +1,6 @@
 from djitellopy import Tello
-import cv2, time
+import cv2
+import time
 from threading import Thread
 
 
@@ -17,7 +18,8 @@ class VideoStreamTello(object):
         # Turn on the video stream from the tello
         self.tello.streamon()
 
-        # Get the current video feed frame and convert into an image (for display purposes)
+        # Get the current video feed frame and convert into an image (for
+        # display purposes)
         self.camera_frame = self.tello.get_frame_read()
         self.img = self.camera_frame.frame
 
@@ -47,7 +49,8 @@ class VideoStreamTello(object):
         self.left_turn_velocity = -self.velocity_val
         self.right_turn_velocity = self.velocity_val
 
-        # Threading is necessary to concurrently display the live video feed and get keystrokes from user
+        # Threading is necessary to concurrently display the live video feed
+        # and get keystrokes from user
         self.video_stream_t = Thread(target=self.update_frame, args=())
         self.video_stream_t.start()
 
@@ -63,11 +66,13 @@ class VideoStreamTello(object):
         """
         while self.stream:
             try:
-                # Get the current image frame from the video feed and display in a popup window
+                # Get the current image frame from the video feed and display
+                # in a popup window
                 self.camera_frame = self.tello.get_frame_read()
                 self.img = self.camera_frame.frame
                 cv2.imshow(self.window_name, self.img)
-                cv2.waitKey(1)  # 'waitKey' is necessary to properly display a cv2 popup window
+                # 'waitKey' is necessary to properly display a cv2 popup window
+                cv2.waitKey(1)
             except KeyboardInterrupt:
                 break
 
@@ -157,4 +162,3 @@ if __name__ == "__main__":
             tello_video_stream.video_stream_t.join()
 
     print(f'done with main loop...')
-
