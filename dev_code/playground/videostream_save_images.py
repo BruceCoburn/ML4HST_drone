@@ -36,6 +36,7 @@ class VideoStreamTello(object):
         self.base_directory = 'raw_data'
         self.image_extension = '.jpg'
 
+        # These attributes are also necessary for saving frames from the camera feed, but are altered from other methods
         self.existing_runs = None
         self.run_number = None
         self.directory_name = None
@@ -47,7 +48,8 @@ class VideoStreamTello(object):
         self.instantiate_base_directory()
         self.check_for_run_directories()
         
-        # Threading is necessary to concurrently display the live video feed and get keystrokes from user
+        # Threading is necessary to concurrently display the live video feed, get keystrokes from user, and save
+        # images from the camera feed
         self.video_stream_t = Thread(target=self.update_frame, args=()) 
         self.video_stream_t.start()
 
@@ -55,12 +57,18 @@ class VideoStreamTello(object):
         self.image_save_t.start()
 
     def instantiate_base_directory(self):
+        """
+        Method to establish where you want your 'run' directories to be stored (for camera feed images)
+        """
 
         if not os.path.exists(self.base_directory):
             self.nice_print(f'Creating "{self.base_directory}" directory')
             os.makedirs(self.base_directory)
 
     def check_for_run_directories(self):
+        """
+        Method to create a directory corresponding to the current run within a 'base_directory'
+        """
 
         # Check for existing run directories
         self.existing_runs = [dir_name for dir_name in os.listdir(self.base_directory) if dir_name.startswith('run')]
@@ -75,6 +83,9 @@ class VideoStreamTello(object):
         os.makedirs(os.path.join(self.base_directory, self.directory_name), exist_ok=True)
 
     def image_save(self):
+        """
+        Method to save images from the Tello Camera feed
+        """
         while self.save:
             try:
                 # Create timestamp which will be used for the saved image filename
@@ -93,6 +104,9 @@ class VideoStreamTello(object):
 
 
     def nice_print(self, string):
+        """
+        Method for a nice print of a '*' lined border!
+        """
         border_length = len(string) + 4
         border = '*' * border_length
 
@@ -193,8 +207,6 @@ class VideoStreamTello(object):
         
     
 if __name__ == "__main__":
-
-
 
     tello_video_stream = VideoStreamTello()
     
