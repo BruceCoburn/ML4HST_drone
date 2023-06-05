@@ -220,12 +220,18 @@ class VideoStreamTello(object):
         self.query_battery()
 
     def diag(self):
+        """
+        Method to print out the current state of various Boolean values
+        """
         print(f'stream: {self.stream}')
         print(f'landed: {self.landed}')
         print(f'main_loop: {self.main_loop}')
         print(f'save: {self.save}')
 
     def killSequence(self):
+        """
+        Method to completely stop all Tello operations other than the connection
+        """
         print(f'killing...')
 
         if self.main_loop:
