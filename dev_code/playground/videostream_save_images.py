@@ -20,13 +20,14 @@ class VideoStreamTello(object):
 
         # Create a command dictionary where we expect a single keyword
         self.state_dictionary = {
-            'kill': self.killSequence,
+            'kill': self.kill_sequence,
             'l': self.initiate_land,
             't': self.initiate_takeoff,
             'diag': self.diag,
         }
 
-        # Create a command dictionary where we expect a single keyword and a parameter
+        # Create a command dictionary where we expect a single keyword and a
+        # parameter
         self.movement_dictionary = {
             'w': self.tello.move_forward,
             's': self.tello.move_back,
@@ -171,7 +172,7 @@ class VideoStreamTello(object):
                 break
 
         # Once we are no longer interested in streaming, land the tello and exit out of all windows
-        # self.killSequence()
+        # self.kill_sequence()
 
     def initiate_land(self):
         """
@@ -228,7 +229,7 @@ class VideoStreamTello(object):
         print(f'main_loop: {self.main_loop}')
         print(f'save: {self.save}')
 
-    def killSequence(self):
+    def kill_sequence(self):
         """
         Method to completely stop all Tello operations other than the connection
         """
@@ -268,7 +269,7 @@ if __name__ == "__main__":
             tello_video_stream.main_loop = False
 
             # Initiate the kill sequence
-            tello_video_stream.killSequence()
+            tello_video_stream.kill_sequence()
 
             # Join our running threads
             tello_video_stream.video_stream_t.join()
