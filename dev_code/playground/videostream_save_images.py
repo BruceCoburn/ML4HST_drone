@@ -18,6 +18,26 @@ class VideoStreamTello(object):
         # Query and print out the battery percentage
         self.query_battery()
 
+        # Create a command dictionary where we expect a single keyword
+        self.state_dictionary = {
+            'kill': self.killSequence,
+            'l': self.initiate_land,
+            't': self.initiate_takeoff,
+            'diag': self.diag,
+        }
+
+        # Create a command dictionary where we expect a single keyword and a parameter
+        self.movement_dictionary = {
+            'w': self.tello.move_forward,
+            's': self.tello.move_back,
+            'a': self.tello.move_left,
+            'd': self.tello.move_right,
+            'e': self.tello.rotate_clockwise,
+            'q': self.tello.rotate_counter_clockwise,
+            'r': self.tello.move_up,
+            'f': self.tello.move_down
+        }
+
         # Turn on the video stream from the tello
         self.tello.streamon()
 
@@ -153,45 +173,51 @@ class VideoStreamTello(object):
         # Once we are no longer interested in streaming, land the tello and exit out of all windows
         # self.killSequence()
 
+    def initiate_land(self):
+        """
+        Method to land the tello and set the 'landed' attribute to True
+        """
+        self.tello.land()
+        self.landed = True
+
+    def initiate_takeoff(self):
+        """
+        Method to have the tello takeoff and set the 'landed' attribute to False
+        """
+        self.tello.takeoff()
+        self.landed = False
+
     def poll_keystrokes(self):
         """
         Method to capture user input (for tello-based movements)
         """
-        command = input("Enter input: ")
+        command = input("Enter command (and argument(s)): ")
 
-        if command == 'kill':
-            print(f'self kill')
-            self.killSequence()
-        elif command == 'w':
-            self.tello.move_forward(self.unit_dp)
-        elif command == 's':
-            self.tello.move_back(self.unit_dp)
-        elif command == 'a':
-            self.tello.move_left(self.unit_dp)
-        elif command == 'd':
-            self.tello.move_right(self.unit_dp)
-        elif command == 'e':
-            self.tello.rotate_clockwise(self.unit_dp)
-        elif command == 'q':
-            self.tello.rotate_counter_clockwise(self.unit_dp)
-        elif command == 'r':
-            self.tello.move_up(self.unit_dp)
-        elif command == 'f':
-            self.tello.move_down(self.unit_dp)
-        elif command == 'l':
-            self.tello.land()
-            self.landed = True
-        elif ((command == 't') and (self.landed == True)):
-            self.tello.takeoff()
-            self.landed = False
-        elif command == 'diag':
-            print(f'diag')
-            self.diag()
-        elif command == 'save':
-            cv2.imwrite("sample_image.jpg", self.img)
-            print(f'Image Saved!')
+        # Split the input into separate strings
+        command_list = command.split()
+
+        # Check whether the input should be decoded using 'state_dictionary' (single keyword)
+        # or using 'movement_dictionary' (single keyword and parameter)
+        if len(command_list) == 1:
+            try:
+                requested_command = self.state_dictionary[command_list[0]]
+                print(f'Calling {requested_command.__name__}')
+                requested_command()
+            except KeyError:
+                print(f'Attempted the following command: {command_list}')
+        elif len(command_list) == 2:
+            try:
+                requested_command = self.movement_dictionary[command_list[0]]
+                print(
+                    f'Calling {requested_command.__name__} {command_list[1]}')
+                requested_command(int(command_list[1]))
+            except KeyError:
+                print(f'Attempted the following command: {command_list}')
         else:
-            print(f'command: {command}')
+            print(f'Unrecognized inputs: {command_list}')
+
+        # Get remaining battery percentage after each command has been sent
+        self.query_battery()
 
     def diag(self):
         print(f'stream: {self.stream}')
@@ -231,8 +257,15 @@ if __name__ == "__main__":
             tello_video_stream.poll_keystrokes()
         except KeyboardInterrupt:
             print(f'!!!Interrupted!!!')
+
+            # Stop our main loop
             tello_video_stream.main_loop = False
+
+            # Initiate the kill sequence
             tello_video_stream.killSequence()
+
+            # Join our running threads
             tello_video_stream.video_stream_t.join()
+            tello_video_stream.image_save_t.join()
 
     print(f'done with main loop...')
