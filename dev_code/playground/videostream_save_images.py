@@ -140,8 +140,8 @@ class VideoStreamTello(object):
         while self.save:
             try:
                 # Create timestamp which will be used for the saved image
-                # filename
-                self.timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                # filename (creates timestamp down to the millisecond)
+                self.timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
 
                 # Generate the filename using the timestamp
                 self.filename = self.timestamp + self.image_extension
@@ -153,6 +153,14 @@ class VideoStreamTello(object):
                 # Save the image in the new directory
                 cv2.imwrite(self.image_path, self.img)
                 self.num_images_written += 1
+
+                ##############################################################################
+                # Adjust this sleep parameter to change the number of images saved per second
+                # Ex: time.sleep(0.1) will (roughly) save 10 images per second
+                ##############################################################################
+                time.sleep(0.1)
+                ##############################################################################
+
             except KeyboardInterrupt:
                 break
 
@@ -250,24 +258,29 @@ class VideoStreamTello(object):
         """
         Method to completely stop all Tello operations other than the connection
         """
-        print(f'killing...')
 
+        print(f'killing main loop...')
         if self.main_loop:
             self.main_loop = False
 
+        print(f'killing stream...')
         if self.stream:
             self.tello.streamoff()
             self.stream = False
 
+        print(f'killing landing...')
         if not self.landed:
             self.tello.land()
             self.landed = True
 
+        print(f'killing popups...')
         if self.popup:
-            cv2.destroyWindow(self.window_name)
+            cv2.waitKey(1)
             cv2.destroyAllWindows()
+            cv2.waitKey(1)
             self.popup = False
 
+        print(f'killing save state...')
         if self.save:
             self.save = False
 
