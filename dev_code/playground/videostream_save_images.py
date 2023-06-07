@@ -8,7 +8,8 @@ import os
 
 
 class VideoStreamTello(object):
-    def __init__(self, unit_dp=30, window_name="Drone Camera", collect_data=True):
+    def __init__(self, unit_dp=30, window_name="Drone Camera",
+                 collect_data=True):
         # Establish Tello() object
         self.tello = Tello()
 
@@ -109,7 +110,8 @@ class VideoStreamTello(object):
 
         # Determine the run number
         self.run_number = len(self.existing_runs) + 1
-        self.nice_print(f'Number of existing run directories: {self.run_number}')
+        self.nice_print(
+            f'Number of existing run directories: {self.run_number}')
 
         # Establish the new directory name
         self.directory_name = f'run{self.run_number:03}'
@@ -269,6 +271,7 @@ class VideoStreamTello(object):
         if self.save:
             self.save = False
 
+
 # Main script execution
 if __name__ == "__main__":
 
@@ -278,7 +281,8 @@ if __name__ == "__main__":
     # Create VideoStreamTello() object
     tello_video_stream = VideoStreamTello()
 
-    # Enter our main execution loop (can only be exited via a user input 'kill' or KeyboardInterrupt)
+    # Enter our main execution loop (can only be exited via a user input
+    # 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
         try:
             tello_video_stream.poll_keystrokes()
