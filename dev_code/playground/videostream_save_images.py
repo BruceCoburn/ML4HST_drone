@@ -1,5 +1,5 @@
+# Import relevant modules
 import datetime
-
 from djitellopy import Tello
 import cv2
 import time
@@ -8,7 +8,7 @@ import os
 
 
 class VideoStreamTello(object):
-    def __init__(self, unit_dp=30, window_name="Drone Camera"):
+    def __init__(self, unit_dp=30, window_name="Drone Camera", collect_data=True):
         # Establish Tello() object
         self.tello = Tello()
 
@@ -26,7 +26,7 @@ class VideoStreamTello(object):
             'diag': self.diag,
         }
 
-        # Create a command dictionary where we expect a single keyword and a
+        # Create a command dictionary where we expect a single keyword AND a
         # parameter
         self.movement_dictionary = {
             'w': self.tello.move_forward,
@@ -46,6 +46,10 @@ class VideoStreamTello(object):
         # display purposes)
         self.camera_frame = self.tello.get_frame_read()
         self.img = self.camera_frame.frame
+        self.num_images_written = 0
+        self.time_to_save_imgs_start = 0
+        self.time_to_save_imgs_end = 0
+        # self.collect_data = collect_data
 
         # Establish object attributes
         self.unit_dp = unit_dp          # Length of spatial displacement
@@ -65,7 +69,7 @@ class VideoStreamTello(object):
         self.image_extension = '.jpg'
 
         # These attributes are also necessary for saving frames from the camera
-        # feed, but are altered from other methods
+        # feed, but will be altered from other methods
         self.existing_runs = None
         self.run_number = None
         self.directory_name = None
@@ -105,11 +109,20 @@ class VideoStreamTello(object):
 
         # Determine the run number
         self.run_number = len(self.existing_runs) + 1
+        self.nice_print(f'Number of existing run directories: {self.run_number}')
 
-        # Create the new directory
+        # Establish the new directory name
         self.directory_name = f'run{self.run_number:03}'
 
+        # Check if the directory already exists
+        while self.directory_name in self.existing_runs:
+            self.nice_print(
+                f'"{self.directory_name}" already exists. Incrementing run number...')
+            self.run_number += 1
+            self.directory_name = f'run{self.run_number:03}'
+
         # Create the new directory
+        self.nice_print(f'Creating {self.directory_name}...')
         os.makedirs(
             os.path.join(
                 self.base_directory,
@@ -120,6 +133,8 @@ class VideoStreamTello(object):
         """
         Method to save images from the Tello Camera feed
         """
+        self.time_to_save_imgs_start = time.time()
+
         while self.save:
             try:
                 # Create timestamp which will be used for the saved image
@@ -135,8 +150,11 @@ class VideoStreamTello(object):
 
                 # Save the image in the new directory
                 cv2.imwrite(self.image_path, self.img)
+                self.num_images_written += 1
             except KeyboardInterrupt:
                 break
+
+        self.time_to_save_imgs_end = time.time() - self.time_to_save_imgs_start
 
     def nice_print(self, string):
         """
@@ -170,9 +188,6 @@ class VideoStreamTello(object):
                 cv2.waitKey(1)
             except KeyboardInterrupt:
                 break
-
-        # Once we are no longer interested in streaming, land the tello and exit out of all windows
-        # self.kill_sequence()
 
     def initiate_land(self):
         """
@@ -254,11 +269,16 @@ class VideoStreamTello(object):
         if self.save:
             self.save = False
 
-
+# Main script execution
 if __name__ == "__main__":
 
+    # Start timing how long this script takes to run
+    start_time = time.time()
+
+    # Create VideoStreamTello() object
     tello_video_stream = VideoStreamTello()
 
+    # Enter our main execution loop (can only be exited via a user input 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
         try:
             tello_video_stream.poll_keystrokes()
@@ -275,4 +295,9 @@ if __name__ == "__main__":
             tello_video_stream.video_stream_t.join()
             tello_video_stream.image_save_t.join()
 
-    print(f'done with main loop...')
+    # Calculate how long our script takes to run
+    end_time = time.time() - start_time
+
+    # Print our ending information
+    print(f'Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_end} seconds')
+    print(f'done with main loop in {end_time} seconds...')
