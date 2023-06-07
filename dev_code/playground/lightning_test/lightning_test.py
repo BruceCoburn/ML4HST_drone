@@ -20,6 +20,12 @@ from PIL import Image
 
 
 class CNN(pl.LightningModule):
+    """
+    A lot of this code was generated from the PyTorch Lightning documentation:
+    https://lightning.ai/docs/pytorch/stable/
+
+    TODO: Add more comments
+    """
     def __init__(self):
         super(CNN, self).__init__()
         # 1 input image channel, 10 output channels, 3x3 square convolution
