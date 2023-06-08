@@ -13,15 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-
-# Import cnn model for torchvision
-from torchvision.models import resnet18
-
 import pytorch_lightning as pl
-
-from PIL import Image
-
-from torchsummary import summary
 
 class CNN(pl.LightningModule):
     """
@@ -88,7 +80,7 @@ class CNN(pl.LightningModule):
         ###############################
         self._nice_print('Fully Connected Layer 1')
 
-        self.FULLY_CONNECTED_INPUTS = self.flatten(torch.ones(1, 20, 5, 5)).shape[1]
+        self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(self.architecture)[1]
         self.fc1 = nn.Linear(self.FULLY_CONNECTED_INPUTS, 100)
         self.architecture.add_module('fc1', self.fc1)
         self._print_layer_output_shape('fc1', self.architecture)
@@ -109,6 +101,9 @@ class CNN(pl.LightningModule):
     def _print_layer_output_shape(self, name, model_in):
         print(f'Output shape after {name}: {model_in(self.dummy_input).shape}')
 
+    def _get_layer_output_shape(self, model_in):
+        return model_in(self.dummy_input).shape
+
     def _nice_print(self, string_in):
         border_length = len(string_in) + 4
         top_border = '*' * border_length
@@ -119,18 +114,8 @@ class CNN(pl.LightningModule):
         print(bottom_border)
 
     def forward(self, x):
-
         x = self.architecture(x)
-
         return x
-
-    def num_flat_features(self, x):
-        size = x.size()[1:]
-        # all dimensions except the batch dimension
-        num_features = 1
-        for s in size:
-            num_features *= s
-        return num_features
 
     def training_step(self, batch, batch_idx):
         x, y = batch
