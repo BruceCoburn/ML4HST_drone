@@ -119,20 +119,6 @@ class CNN(pl.LightningModule):
         print(bottom_border)
 
     def forward(self, x):
-        # Convolution Layer 1
-        # x = self.maxpool1(self.relu1(self.conv1(x)))
-
-        # Convolution Layer 2
-        # x = self.maxpool2(self.relu2(self.conv2(x)))
-
-        # Flatten Layer
-        # x = self.flatten(x)
-
-        # Fully Connected Layer 1
-        # x = self.relu3(self.fc1(x))
-
-        # Output Layer
-        # x = self.fc2(x)
 
         x = self.architecture(x)
 
