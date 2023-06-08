@@ -35,98 +35,106 @@ class CNN(pl.LightningModule):
         # 1 input image channel, 10 output channels, 3x3 square convolution
         # kernel
 
+        # Dummy input to calculate the output shape of each layer
+        self.dummy_input = torch.ones(1, 1, 28, 28)
+
+        self.architecture = nn.Sequential()
+
+        ###############################
         # Convolution Layer 1
+        ###############################
+        self._nice_print('Convolution Layer 1')
+
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=0)
+        self.architecture.add_module('conv1', self.conv1)
+        self._print_layer_output_shape('conv1', self.architecture)
+
         self.relu1 = nn.ReLU()
+        self.architecture.add_module('relu1', self.relu1)
+        self._print_layer_output_shape('relu1', self.architecture)
+
         self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.architecture.add_module('maxpool1', self.maxpool1)
+        self._print_layer_output_shape('maxpool1', self.architecture)
 
+        ###############################
         # Convolution Layer 2
+        ###############################
+        self._nice_print('Convolution Layer 2')
+
         self.conv2 = nn.Conv2d(in_channels=10, out_channels=20, kernel_size=3, stride=1, padding=0)
+        self.architecture.add_module('conv2', self.conv2)
+        self._print_layer_output_shape('conv2', self.architecture)
+
         self.relu2 = nn.ReLU()
+        self.architecture.add_module('relu2', self.relu2)
+        self._print_layer_output_shape('relu2', self.architecture)
+
         self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.architecture.add_module('maxpool2', self.maxpool2)
+        self._print_layer_output_shape('maxpool2', self.architecture)
 
+        ###############################
         # Flatten Layer
-        self.flatten = nn.Flatten()
+        ###############################
+        self._nice_print('Flatten Layer')
 
+        self.flatten = nn.Flatten()
+        self.architecture.add_module('flatten', self.flatten)
+        self._print_layer_output_shape('flatten', self.architecture)
+
+        ###############################
         # Fully Connected Layer 1
+        ###############################
+        self._nice_print('Fully Connected Layer 1')
+
         self.FULLY_CONNECTED_INPUTS = self.flatten(torch.ones(1, 20, 5, 5)).shape[1]
         self.fc1 = nn.Linear(self.FULLY_CONNECTED_INPUTS, 100)
+        self.architecture.add_module('fc1', self.fc1)
+        self._print_layer_output_shape('fc1', self.architecture)
+
         self.relu3 = nn.ReLU()
+        self.architecture.add_module('relu3', self.relu3)
+        self._print_layer_output_shape('relu3', self.architecture)
 
+        ###############################
         # Output Layer
+        ###############################
+        self._nice_print('Output Layer')
+
         self.fc2 = nn.Linear(100, 10)  # 10 classes
+        self.architecture.add_module('fc2', self.fc2)
+        self._print_layer_output_shape('fc2', self.architecture)
 
-        self.dummy_input = torch.ones(64, 1, 28, 28)
+    def _print_layer_output_shape(self, name, model_in):
+        print(f'Output shape after {name}: {model_in(self.dummy_input).shape}')
 
-        self._print_layer_output_shape()
-
-    def nice_shape_print(self, layer_name, module_names, tensors):
-
-        border_length = len(layer_name) + 4
+    def _nice_print(self, string_in):
+        border_length = len(string_in) + 4
         top_border = '*' * border_length
         bottom_border = '-' * border_length
 
         print(top_border)
-        print(f'* {layer_name} *')
+        print(f'* {string_in} *')
         print(bottom_border)
-        for idx, name in enumerate(module_names):
-            print(name, 'output shape:', tensors[idx].shape)
-
-    def calculate_layer(self, first_input, first_layer, *args):
-        outputs = []
-        output = first_layer(first_input)
-        outputs.append(output)
-
-        for arg in args:
-            output = arg(output)
-            outputs.append(output)
-
-        return outputs
-
-    def _print_layer_output_shape(self):
-
-        # Dummy input
-        self.nice_shape_print('Dummy Input', ['Input shape'], [self.dummy_input])
-
-        # Convolution Layer 1
-        modules = ['conv1', 'relu1', 'maxpool1']
-        outputs = self.calculate_layer(self.dummy_input, self.conv1, self.relu1, self.maxpool1)
-        self.nice_shape_print('Convolution Layer 1', modules, outputs)
-
-        # Convolution Layer 2
-        modules = ['conv2', 'relu2', 'maxpool2']
-        outputs = self.calculate_layer(outputs[-1], self.conv2, self.relu2, self.maxpool2)
-        self.nice_shape_print('Convolution Layer 2', modules, outputs)
-
-        # Flatten Layer
-        modules = ['flatten']
-        outputs = [self.flatten(outputs[-1])]
-
-        # Fully Connected Layer 1
-        modules = ['fc1', 'relu3']
-        outputs = self.calculate_layer(outputs[-1], self.fc1, self.relu3)
-        self.nice_shape_print('Fully Connected Layer 1', modules, outputs)
-
-        # Output Layer
-        modules = ['fc2']
-        outputs = [self.fc2(outputs[-1])]
-        self.nice_shape_print('Output Layer', modules, outputs)
 
     def forward(self, x):
         # Convolution Layer 1
-        x = self.maxpool1(self.relu1(self.conv1(x)))
+        # x = self.maxpool1(self.relu1(self.conv1(x)))
 
         # Convolution Layer 2
-        x = self.maxpool2(self.relu2(self.conv2(x)))
+        # x = self.maxpool2(self.relu2(self.conv2(x)))
 
         # Flatten Layer
-        x = self.flatten(x)
+        # x = self.flatten(x)
 
         # Fully Connected Layer 1
-        x = self.relu3(self.fc1(x))
+        # x = self.relu3(self.fc1(x))
 
         # Output Layer
-        x = self.fc2(x)
+        # x = self.fc2(x)
+
+        x = self.architecture(x)
 
         return x
 
