@@ -17,7 +17,7 @@ import pytorch_lightning as pl
 
 class CNN(pl.LightningModule):
     """
-    A lot of this code was generated from the PyTorch Lightning documentation:
+    A lot of this code was generated from referencing the PyTorch Lightning documentation:
     https://lightning.ai/docs/pytorch/stable/
 
     TODO: Add more comments
