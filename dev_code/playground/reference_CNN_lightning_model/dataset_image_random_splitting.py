@@ -16,7 +16,6 @@ import os
 import shutil
 import random
 import argparse
-import time
 
 file_extension = '.jpg'
 
