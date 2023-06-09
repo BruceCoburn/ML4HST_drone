@@ -15,6 +15,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 import pytorch_lightning as pl
 
+
 class CNN(pl.LightningModule):
     """
     A lot of this code was generated from referencing the PyTorch Lightning documentation:
@@ -22,6 +23,7 @@ class CNN(pl.LightningModule):
 
     TODO: Add more comments
     """
+
     def __init__(self):
         super(CNN, self).__init__()
         # 1 input image channel, 10 output channels, 3x3 square convolution
@@ -37,7 +39,12 @@ class CNN(pl.LightningModule):
         ###############################
         self._nice_print('Convolution Layer 1')
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=0)
+        self.conv1 = nn.Conv2d(
+            in_channels=1,
+            out_channels=10,
+            kernel_size=3,
+            stride=1,
+            padding=0)
         self.architecture.add_module('conv1', self.conv1)
         self._print_layer_output_shape('conv1', self.architecture)
 
@@ -54,7 +61,12 @@ class CNN(pl.LightningModule):
         ###############################
         self._nice_print('Convolution Layer 2')
 
-        self.conv2 = nn.Conv2d(in_channels=10, out_channels=20, kernel_size=3, stride=1, padding=0)
+        self.conv2 = nn.Conv2d(
+            in_channels=10,
+            out_channels=20,
+            kernel_size=3,
+            stride=1,
+            padding=0)
         self.architecture.add_module('conv2', self.conv2)
         self._print_layer_output_shape('conv2', self.architecture)
 
@@ -80,7 +92,8 @@ class CNN(pl.LightningModule):
         ###############################
         self._nice_print('Fully Connected Layer 1')
 
-        self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(self.architecture)[1]
+        self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(self.architecture)[
+            1]
         self.fc1 = nn.Linear(self.FULLY_CONNECTED_INPUTS, 100)
         self.architecture.add_module('fc1', self.fc1)
         self._print_layer_output_shape('fc1', self.architecture)
@@ -130,22 +143,45 @@ class CNN(pl.LightningModule):
 
     def prepare_data(self):
         # download data
-        datasets.MNIST('./data_lightning', train=True, download=True, transform=transforms.ToTensor())
-        datasets.MNIST('./data_lightning', train=False, download=True, transform=transforms.ToTensor())
+        datasets.MNIST(
+            './data_lightning',
+            train=True,
+            download=True,
+            transform=transforms.ToTensor())
+        datasets.MNIST(
+            './data_lightning',
+            train=False,
+            download=True,
+            transform=transforms.ToTensor())
 
     def train_dataloader(self):
-        mnist_train = datasets.MNIST('./data_lightning', train=True, download=False, transform=transforms.ToTensor())
-        loader = torch.utils.data.DataLoader(mnist_train, batch_size=64, shuffle=True)
+        mnist_train = datasets.MNIST(
+            './data_lightning',
+            train=True,
+            download=False,
+            transform=transforms.ToTensor())
+        loader = torch.utils.data.DataLoader(
+            mnist_train, batch_size=64, shuffle=True)
         return loader
 
     def val_dataloader(self):
-        mnist_test = datasets.MNIST('./data_lightning', train=False, download=False, transform=transforms.ToTensor())
-        loader = torch.utils.data.DataLoader(mnist_test, batch_size=64, shuffle=False)
+        mnist_test = datasets.MNIST(
+            './data_lightning',
+            train=False,
+            download=False,
+            transform=transforms.ToTensor())
+        loader = torch.utils.data.DataLoader(
+            mnist_test, batch_size=64, shuffle=False)
         return loader
 
     def test_dataloader(self):
-        mnist_test = datasets.MNIST('./data_lightning', train=False, download=False, transform=transforms.ToTensor())
-        loader = torch.utils.data.DataLoader(mnist_test, batch_size=64, shuffle=False)
+        mnist_test = datasets.MNIST(
+            './data_lightning',
+            train=False,
+            download=False,
+            transform=transforms.ToTensor())
+        loader = torch.utils.data.DataLoader(
+            mnist_test, batch_size=64, shuffle=False)
         return loader
 
     def validation_step(self, batch, batch_idx):
@@ -161,6 +197,7 @@ class CNN(pl.LightningModule):
         loss = F.cross_entropy(logits, y)
         self.log('test_loss', loss)
         return loss
+
 
 if __name__ == '__main__':
 
@@ -189,15 +226,21 @@ if __name__ == '__main__':
 
     # Test model
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('./data_lightning', train=False, download=False, transform=transforms.ToTensor()),
+        datasets.MNIST(
+            './data_lightning',
+            train=False,
+            download=False,
+            transform=transforms.ToTensor()),
         batch_size=args.batch_size, shuffle=True)
     test_loss = 0
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
             output = model(data)
-            test_loss += F.cross_entropy(output, target, reduction='sum').item()
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            test_loss += F.cross_entropy(output,
+                                         target, reduction='sum').item()
+            # get the index of the max log-probability
+            pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
@@ -223,7 +266,7 @@ if __name__ == '__main__':
     output = model(img)
     pred = output.argmax(dim=1, keepdim=True)
     print(f'Prediction: {pred.item()}')
-    
+
     img = Image.open('test2.png').convert('L')
     img = transforms.ToTensor()(img)
     img = img.unsqueeze(0)

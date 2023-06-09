@@ -5,6 +5,9 @@
 #     path to the directory that you want to be "pep-ified" should be provided
 # +++ Ensure that when running this script you have ADMIN privileges
 #       "sudo" for Linux, "Run as Administrator" for Windows...
+#
+# This script can be run from the command line as follows:
+# python auto_autopep8.py <directory_path>
 ################################################################################
 
 import os

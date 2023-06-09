@@ -154,12 +154,12 @@ class VideoStreamTello(object):
                 cv2.imwrite(self.image_path, self.img)
                 self.num_images_written += 1
 
-                ##############################################################################
+                ###############################################################
                 # Adjust this sleep parameter to change the number of images saved per second
                 # Ex: time.sleep(0.1) will (roughly) save 10 images per second
-                ##############################################################################
+                ###############################################################
                 time.sleep(0.1)
-                ##############################################################################
+                ###############################################################
 
             except KeyboardInterrupt:
                 break
