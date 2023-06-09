@@ -51,6 +51,11 @@ def split_images(destination_folder, class_a_name, class_a_folder, class_b_name,
     class_a_train_count, class_a_val_count, class_a_test_count = calculate_split_ratio(class_a_images, split_ratio)
     class_b_train_count, class_b_val_count, class_b_test_count = calculate_split_ratio(class_b_images, split_ratio)
 
+    print('----------------------------------------')
+    print(f'TOTAL TRAIN COUNT: {total_train_count}')
+    print(f'TOTAL VAL COUNT: {total_val_count}')
+    print(f'TOTAL TEST COUNT: {total_test_count}')
+
     ##################################################################
     # Copy images to the destination folders based on the split count
     ##################################################################
@@ -128,8 +133,10 @@ if __name__ == '__main__':
     class_a_folder = os.path.join(source_folder, class_a_name)
     class_b_folder = os.path.join(source_folder, class_b_name)
 
+    print('***************************************************************')
     print(f'class_a_folder: {class_a_folder}')
     print(f'class_b_folder: {class_b_folder}')
+    print('***************************************************************')
 
     # Create the destination folder if it does not exist (and all the associated subfolders)
     create_folder_if_not_exists(destination_folder)
