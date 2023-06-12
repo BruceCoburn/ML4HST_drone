@@ -138,31 +138,81 @@ class CNN(pl.LightningModule):
         acc = (preds == y).sum().item() / len(preds)
         self.log(f'{typeName}_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         self.log(f'{typeName}_acc', acc, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        return loss, acc
+
+        output_dict = {
+            f'{typeName}_loss': loss,
+            f'{typeName}_accuracy': acc
+        }
+
+        return output_dict
 
     def training_step(self, batch, batch_idx):
         x, y = batch
         y = y.unsqueeze(1)
         y = y.float()
         logits = self.forward(x)
-        loss, acc = self._calculate_loss_and_accuracy('train', logits, y)
-        return loss
+        training_dict = self._calculate_loss_and_accuracy('train', logits, y)
+        return training_dict['train_loss']
+
+    """
+    def on_train_epoch_end(self, outputs):
+        print(f'on_train_epoch_end...')
+        avg_loss = torch.stack([x['train_loss'] for x in outputs]).mean()
+        avg_accuracy = torch.stack([x['train_accuracy'] for x in outputs]).mean()
+
+        metrics = {
+            'train_loss': avg_loss,
+            'train_accuracy': avg_accuracy
+        }
+        self.log_dict(metrics)
+
+        return metrics
+    """
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y = y.unsqueeze(1)
         y = y.float()
         logits = self.forward(x)
-        loss, acc = self._calculate_loss_and_accuracy('val', logits, y)
-        return loss
+        validation_dict = self._calculate_loss_and_accuracy('val', logits, y)
+        return validation_dict['val_loss']
+
+    """
+    def on_validation_epoch_end(self, outputs):
+        print(f'on_validation_epoch_end...')
+        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        avg_accuracy = torch.stack([x['val_accuracy'] for x in outputs]).mean()
+
+        metrics = {
+            'val_loss': avg_loss,
+            'val_accuracy': avg_accuracy
+        }
+        self.log_dict(metrics)
+
+        return metrics
+    """
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         y = y.unsqueeze(1)
         y = y.float()
         logits = self.forward(x)
-        loss, acc = self._calculate_loss_and_accuracy('test', logits, y)
-        return loss
+        testing_dict = self._calculate_loss_and_accuracy('test', logits, y)
+        return testing_dict['test_loss']
+
+    """
+    def on_test_epoch_end(self, logits):
+        avg_loss = torch.stack([x['test_loss'] for x in logits]).mean()
+        avg_accuracy = torch.stack([x['test_accuracy'] for x in logits]).mean()
+
+        metrics = {
+            'test_loss': avg_loss,
+            'test_accuracy': avg_accuracy,
+        }
+
+        self.log_dict(metrics, prog_bar=True)
+        return metrics
+    """
 
 
 class ImageDataModule(pl.LightningDataModule):
@@ -287,6 +337,21 @@ if __name__ == '__main__':
 
     end_time = datetime.now()
     print(f'Training run ended at: {end_time}')
+    print(f'Training run duration: {end_time - start_time}')
+
+    start_time = datetime.now()
+    print(f'Testing run started at: {start_time}')
+
+    test_result = trainer.test(model, datamodule=dm)
+
+    print('*************************************')
+    print(f'Test loss: {test_result[0]["loss"]}')
+    print(f'Test accuracy: {test_result[0]["acc"]}')
+    print('*************************************')
+
+    end_time = datetime.now()
+    print(f'Testing run ended at: {end_time}')
+    print(f'Testing run duration: {end_time - start_time}')
 
     # Test model
     """
