@@ -1,16 +1,17 @@
 
 # Python script to automatically split images into training, validation and test sets. This occurs randomly and depends
-# on the split ratio. NOTE: Right now, this script is only compatible with BINARY CLASSIFICATION.
+# on the split ratio. NOTE: Right now, this script is only compatible with
+# BINARY CLASSIFICATION.
 
-# The script should be able to be run from the command line - an example is provided below:
+# The script should be able to be run from the command line - an example
+# is provided below:
 
-# python .\\dataset_image_random_splitting.py
-#    --source_folder "C:\Users\bcoburn1\\OneDrive - University of Wyoming\\Desktop\\ML4HST_drone\\dev_code\\playground\raw_data\run013"
-#    --destination_folder C:\Users\bcoburn1\\ML4HST_drone\\dev_code\\playground\reference_CNN_lightning_model\\DRONE_OBSTACLES
-#    --class_a_name 'BLOCKED'
-#    --class_b_name 'UNBLOCKED'
-#    --split_ratio (0.7, 0.2, 0.1)
-#
+# python .\dataset_image_random_splitting.py
+# --source_folder "C:\Users\bcoburn1\OneDrive - University of Wyoming\Desktop\ML4HST_drone\dev_code\playground\reference_CNN_lightning_model\obstacle_dataset"
+# --destination_folder C:\Users\bcoburn1\ML4HST_drone\dev_code\playground\reference_CNN_lightning_model\DRONE_OBSTACLES
+# --class_a_name 'BLOCKED'
+# --class_b_name 'UNBLOCKED'
+# --split_ratio (0.7, 0.2, 0.1)
 
 import os
 import shutil

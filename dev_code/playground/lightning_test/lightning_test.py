@@ -15,6 +15,8 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 import pytorch_lightning as pl
 
+data_folder = './data_lightning'
+
 
 class CNN(pl.LightningModule):
     """
@@ -144,19 +146,19 @@ class CNN(pl.LightningModule):
     def prepare_data(self):
         # download data
         datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=True,
             download=True,
             transform=transforms.ToTensor())
         datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=False,
             download=True,
             transform=transforms.ToTensor())
 
     def train_dataloader(self):
         mnist_train = datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=True,
             download=False,
             transform=transforms.ToTensor())
@@ -166,7 +168,7 @@ class CNN(pl.LightningModule):
 
     def val_dataloader(self):
         mnist_test = datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=False,
             download=False,
             transform=transforms.ToTensor())
@@ -176,7 +178,7 @@ class CNN(pl.LightningModule):
 
     def test_dataloader(self):
         mnist_test = datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=False,
             download=False,
             transform=transforms.ToTensor())
@@ -227,7 +229,7 @@ if __name__ == '__main__':
     # Test model
     test_loader = torch.utils.data.DataLoader(
         datasets.MNIST(
-            './data_lightning',
+            data_folder,
             train=False,
             download=False,
             transform=transforms.ToTensor()),
