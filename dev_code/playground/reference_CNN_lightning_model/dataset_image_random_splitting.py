@@ -1,16 +1,16 @@
-"""
-Python script to automatically split images into training, validation and test sets. This occurs randomly and depends
-on the split ratio. NOTE: Right now, this script is only compatible with BINARY CLASSIFICATION.
 
-The script should be able to be run from the command line - an example is provided below:
+# Python script to automatically split images into training, validation and test sets. This occurs randomly and depends
+# on the split ratio. NOTE: Right now, this script is only compatible with BINARY CLASSIFICATION.
 
-python .\\dataset_image_random_splitting.py
-    --source_folder "C:\Users\bcoburn1\\OneDrive - University of Wyoming\\Desktop\\ML4HST_drone\\dev_code\\playground\raw_data\run013"
-    --destination_folder C:\Users\bcoburn1\\ML4HST_drone\\dev_code\\playground\reference_CNN_lightning_model\\DRONE_OBSTACLES
-    --class_a_name 'BLOCKED'
-    --class_b_name 'UNBLOCKED'
-    --split_ratio (0.7, 0.2, 0.1)
-"""
+# The script should be able to be run from the command line - an example is provided below:
+
+# python .\\dataset_image_random_splitting.py
+#    --source_folder "C:\Users\bcoburn1\\OneDrive - University of Wyoming\\Desktop\\ML4HST_drone\\dev_code\\playground\raw_data\run013"
+#    --destination_folder C:\Users\bcoburn1\\ML4HST_drone\\dev_code\\playground\reference_CNN_lightning_model\\DRONE_OBSTACLES
+#    --class_a_name 'BLOCKED'
+#    --class_b_name 'UNBLOCKED'
+#    --split_ratio (0.7, 0.2, 0.1)
+#
 
 import os
 import shutil
@@ -44,8 +44,12 @@ def split_images(destination_folder, class_a_name, class_a_folder,
     # Collect the image files from ClassA and ClassB folders
     class_a_images = [file for file in os.listdir(
         class_a_folder) if file.endswith(file_extension)]
+    print('***************************************************************')
+    print(f'Number of class {class_a_name} images: {len(class_a_images)}')
     class_b_images = [file for file in os.listdir(
         class_b_folder) if file.endswith(file_extension)]
+    print(f'Number of class {class_b_name} images: {len(class_b_images)}')
+    print('***************************************************************')
 
     # Randomly shuffle the image files
     random.shuffle(class_a_images)
@@ -126,7 +130,7 @@ def delete_images_in_folder(folder_path, image_extension=file_extension):
     """
     Delete all images in a provided folderpath
     """
-    print(f'----------> Removing images from {folder_path}...')
+    print(f'----------> Removing existing images from {folder_path}...')
     # Delete all images in the folder
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
