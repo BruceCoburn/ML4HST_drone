@@ -20,10 +20,11 @@ def resize_image_dimensions(image_width, image_height, size_reduction_factor):
     new_width = int(new_width)
     new_height = int(new_height)
 
-    print(f"********************************************************")
+    print(f"========================================================")
+    print(f"\tsize_reduction_factor: {size_reduction_factor}")
     print(f"Resizing image_width from {image_width} to {new_width}")
     print(f"Resizing image_height from {image_height} to {new_height}")
-    print(f"********************************************************")
+    print(f"========================================================")
 
     return new_width, new_height
 

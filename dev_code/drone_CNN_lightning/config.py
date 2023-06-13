@@ -21,7 +21,7 @@ DEVICES = [0]  # Default: [0] (i.e. use only the first GPU)
 DATA_DIR = "DRONE_OBSTACLES"
 
 # Logging/Saving parameters
-TORCH_MODEL_FILENAME = "drone_obstacle_cnn_876.pt"
+TORCH_MODEL_FILENAME = "drone_obstacle_cnn.pt"
 ALSO_TEST = True
 SAVE_MODEL = True
 LOG_EVERY_N_STEPS = 1
