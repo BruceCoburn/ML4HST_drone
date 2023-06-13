@@ -163,8 +163,15 @@ cython_debug/
 ##########################################
 # ML4HST - Specific Drone Code
 ##########################################
-raw_data/
+
+# Ignore logging files (induced by pytorch lightning)
 lightning_logs/
+
+# Ignore datasets
+raw_data/
 run026/
 run027/
 DRONE_OBSTACLES/
+
+# Ignore all .pt files (saved model files)
+*.pt
