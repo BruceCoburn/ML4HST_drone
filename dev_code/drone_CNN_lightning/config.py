@@ -14,6 +14,8 @@ DATA_DIR = "DRONE_OBSTACLES"
 ACCELERATOR = "gpu"
 DEVICES = [0]
 TORCH_MODEL_FILENAME = "drone_obstacle_cnn.pt"
+ALSO_TEST = True
+SAVE_MODEL = True
 
 # Hyperparameters
 BATCH_SIZE = 64

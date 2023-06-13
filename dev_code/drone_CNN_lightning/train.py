@@ -11,6 +11,7 @@ from supplemental_functions import resize_image_dimensions
 import config
 
 if __name__ == "__main__":
+    # Kickoff the timing of the training run
     start_time = datetime.now()
     print(f"Training run started at: {start_time}")
 
@@ -54,20 +55,32 @@ if __name__ == "__main__":
     print(f"Training model for a max {config.MAX_EPOCHS} epochs")
     trainer.fit(model, datamodule=dm)
 
-    # Test the model
-    print(f"Testing model...")
-    trainer.test(model, datamodule=dm)
-
-    # Save model
-    torch_model_filename = config.TORCH_MODEL_FILENAME
-    print(f"Saving model as {torch_model_filename}")
-    torch.save(model.state_dict(), torch_model_filename)
-
+    # End the timing of the training run
     end_time = datetime.now()
     print(f"Training run ended at: {end_time}")
     print(f"Training run duration: {end_time - start_time}")
 
+    if config.ALSO_TEST:
+        # Test the model
+
+        # Kickoff the timing of the testing run
+        start_time = datetime.now()
+        print(f"Testing run started at: {start_time}")
+        trainer.test(model, datamodule=dm)
+
+        # End the timing of the testing run
+        end_time = datetime.now()
+        print(f"Testing run ended at: {end_time}")
+        print(f"Testing run duration: {end_time - start_time}")
+
+    if config.SAVE_MODEL:
+        # Save model
+        torch_model_filename = config.TORCH_MODEL_FILENAME
+        print(f"Saving model as {torch_model_filename}")
+        torch.save(model.state_dict(), torch_model_filename)
+
     """
+    # Example code to load (from a '.pt' file) and test model
     start_time = datetime.now()
     print(f'Testing run started at: {start_time}')
 
