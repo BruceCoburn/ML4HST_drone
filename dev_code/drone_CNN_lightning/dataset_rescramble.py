@@ -14,7 +14,6 @@ from supplemental_functions import create_folder_if_not_exists, split_images
 import config
 
 if __name__ == "__main__":
-
     # Create variables specific to the user input
     source_folder = config.SOURCE_FOLDER
     destination_folder = config.DESTINATION_FOLDER

@@ -8,6 +8,7 @@ import os
 import shutil
 import random
 
+
 def resize_image_dimensions(image_width, image_height, size_reduction_factor):
     """
     This function takes in original image dimensions and returns the new
@@ -19,12 +20,13 @@ def resize_image_dimensions(image_width, image_height, size_reduction_factor):
     new_width = int(new_width)
     new_height = int(new_height)
 
-    print(f'********************************************************')
-    print(f'Resizing image_width from {image_width} to {new_width}')
-    print(f'Resizing image_height from {image_height} to {new_height}')
-    print(f'********************************************************')
+    print(f"********************************************************")
+    print(f"Resizing image_width from {image_width} to {new_width}")
+    print(f"Resizing image_height from {image_height} to {new_height}")
+    print(f"********************************************************")
 
     return new_width, new_height
+
 
 def calculate_split_ratio(image_list, split_ratio):
     """

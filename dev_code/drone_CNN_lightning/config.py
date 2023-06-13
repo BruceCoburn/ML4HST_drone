@@ -15,7 +15,7 @@ IMAGE_HEIGHT = 720
 ##################################
 # Hardware parameters
 ACCELERATOR = "gpu"
-DEVICES = [0] # Default: [0] (i.e. use only the first GPU)
+DEVICES = [0]  # Default: [0] (i.e. use only the first GPU)
 
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
@@ -30,9 +30,9 @@ LOG_EVERY_N_STEPS = 1
 DATASET_FILE_EXT = ".jpg"
 SOURCE_FOLDER = "C:\\Users\\bcoburn1\OneDrive - University of Wyoming\\Desktop\\ML4HST_drone\\dev_code\\playground\\reference_CNN_lightning_model\\obstacle_dataset"
 # DESTINATION_FOLDER = 'DRONE_OBSTACLES' # Uncomment this if you want to augment the 'original' dataset directory
-DESTINATION_FOLDER = 'DRONE_OBSTACLES_RESCRAMBLE'
-CLASS_A_NAME = 'BLOCKED'
-CLASS_B_NAME = 'UNBLOCKED'
+DESTINATION_FOLDER = "DRONE_OBSTACLES_RESCRAMBLE"
+CLASS_A_NAME = "BLOCKED"
+CLASS_B_NAME = "UNBLOCKED"
 SPLIT_RATIO = (0.7, 0.2, 0.1)
 
 ##################################
