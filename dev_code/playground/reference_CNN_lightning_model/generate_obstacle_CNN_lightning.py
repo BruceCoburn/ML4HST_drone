@@ -7,16 +7,14 @@ python generate_obstacle_CNN_lightning.py --epochs 10 --batch_size 64 --learning
 The script should output the training loss and accuracy to the command line every 100 iterations
 """
 
-# Import relevant modules
+# Import Python-native modules
 import argparse
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import transforms, datasets
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
-
 from datetime import datetime
 
 # Define the data folder
@@ -36,7 +34,6 @@ class CNN(pl.LightningModule):
         # kernel
 
         # Dummy input to calculate the output shape of each layer
-        # self.dummy_input = torch.ones(1, 1, 28, 28)
         self.dummy_input = torch.ones(1, num_channels, image_width, image_height)
 
         self.architecture = nn.Sequential()
@@ -53,15 +50,19 @@ class CNN(pl.LightningModule):
             stride=1,
             padding=0)
         self.architecture.add_module('conv1', self.conv1)
-        self._print_layer_output_shape('conv1', self.architecture)
+        output_shape = self._get_layer_output_shape('conv1', self.architecture)
 
         self.relu1 = nn.ReLU()
         self.architecture.add_module('relu1', self.relu1)
-        self._print_layer_output_shape('relu1', self.architecture)
+        output_shape = self._get_layer_output_shape('relu1', self.architecture)
+
+        self.b1 = nn.BatchNorm2d(output_shape[1])
+        self.architecture.add_module('b1', self.b1)
+        output_shape = self._get_layer_output_shape('b1', self.architecture)
 
         self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module('maxpool1', self.maxpool1)
-        self._print_layer_output_shape('maxpool1', self.architecture)
+        output_shape = self._get_layer_output_shape('maxpool1', self.architecture)
 
         ###############################
         # Convolution Layer 2
@@ -75,15 +76,19 @@ class CNN(pl.LightningModule):
             stride=1,
             padding=0)
         self.architecture.add_module('conv2', self.conv2)
-        self._print_layer_output_shape('conv2', self.architecture)
+        output_shape = self._get_layer_output_shape('conv2', self.architecture)
 
         self.relu2 = nn.ReLU()
         self.architecture.add_module('relu2', self.relu2)
-        self._print_layer_output_shape('relu2', self.architecture)
+        output_shape = self._get_layer_output_shape('relu2', self.architecture)
+
+        self.b2 = nn.BatchNorm2d(output_shape[1])
+        self.architecture.add_module('b2', self.b2)
+        output_shape = self._get_layer_output_shape('b2', self.architecture)
 
         self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module('maxpool2', self.maxpool2)
-        self._print_layer_output_shape('maxpool2', self.architecture)
+        output_shape = self._get_layer_output_shape('maxpool2', self.architecture)
 
         ###############################
         # Flatten Layer
@@ -92,27 +97,26 @@ class CNN(pl.LightningModule):
 
         self.flatten = nn.Flatten()
         self.architecture.add_module('flatten', self.flatten)
-        self._print_layer_output_shape('flatten', self.architecture)
+        output_shape = self._get_layer_output_shape('flatten', self.architecture)
 
         ###############################
         # Output Layer
         ###############################
         self._nice_print('Output Layer')
 
-        self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(self.architecture)[
+        self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(name='fc_calc', model_in=self.architecture, print_shape=False)[
             1]
         self.fc1 = nn.Linear(self.FULLY_CONNECTED_INPUTS, 1)
         self.architecture.add_module('fc1', self.fc1)
-        self._print_layer_output_shape('fc1', self.architecture)
+        output_shape = self._get_layer_output_shape('fc1', self.architecture)
 
         self.sigmoid = nn.Sigmoid()
         self.architecture.add_module('sigmoid', self.sigmoid)
-        self._print_layer_output_shape('sigmoid', self.architecture)
+        output_shape = self._get_layer_output_shape('sigmoid', self.architecture)
 
-    def _print_layer_output_shape(self, name, model_in):
-        print(f'Output shape after {name}: {model_in(self.dummy_input).shape}')
-
-    def _get_layer_output_shape(self, model_in):
+    def _get_layer_output_shape(self, name, model_in, print_shape=True):
+        if print_shape:
+            print(f'Output shape after {name}: {model_in(self.dummy_input).shape}')
         return model_in(self.dummy_input).shape
 
     def _nice_print(self, string_in):
@@ -154,21 +158,6 @@ class CNN(pl.LightningModule):
         training_dict = self._calculate_loss_and_accuracy('train', logits, y)
         return training_dict['train_loss']
 
-    """
-    def on_train_epoch_end(self, outputs):
-        print(f'on_train_epoch_end...')
-        avg_loss = torch.stack([x['train_loss'] for x in outputs]).mean()
-        avg_accuracy = torch.stack([x['train_accuracy'] for x in outputs]).mean()
-
-        metrics = {
-            'train_loss': avg_loss,
-            'train_accuracy': avg_accuracy
-        }
-        self.log_dict(metrics)
-
-        return metrics
-    """
-
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y = y.unsqueeze(1)
@@ -177,21 +166,6 @@ class CNN(pl.LightningModule):
         validation_dict = self._calculate_loss_and_accuracy('val', logits, y)
         return validation_dict['val_loss']
 
-    """
-    def on_validation_epoch_end(self, outputs):
-        print(f'on_validation_epoch_end...')
-        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        avg_accuracy = torch.stack([x['val_accuracy'] for x in outputs]).mean()
-
-        metrics = {
-            'val_loss': avg_loss,
-            'val_accuracy': avg_accuracy
-        }
-        self.log_dict(metrics)
-
-        return metrics
-    """
-
     def test_step(self, batch, batch_idx):
         x, y = batch
         y = y.unsqueeze(1)
@@ -199,20 +173,6 @@ class CNN(pl.LightningModule):
         logits = self.forward(x)
         testing_dict = self._calculate_loss_and_accuracy('test', logits, y)
         return testing_dict['test_loss']
-
-    """
-    def on_test_epoch_end(self, logits):
-        avg_loss = torch.stack([x['test_loss'] for x in logits]).mean()
-        avg_accuracy = torch.stack([x['test_accuracy'] for x in logits]).mean()
-
-        metrics = {
-            'test_loss': avg_loss,
-            'test_accuracy': avg_accuracy,
-        }
-
-        self.log_dict(metrics, prog_bar=True)
-        return metrics
-    """
 
 
 class ImageDataModule(pl.LightningDataModule):
@@ -253,7 +213,6 @@ class ImageDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=4,
-            #pin_memory=True
         )
 
     def val_dataloader(self):
@@ -262,7 +221,6 @@ class ImageDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=4,
-            #pin_memory=True
         )
 
     def test_dataloader(self):
@@ -271,7 +229,6 @@ class ImageDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=4,
-            #pin_memory=True
         )
 
 def resize_image_dimensions(image_width, image_height, size_reduction_factor):
@@ -327,6 +284,14 @@ if __name__ == '__main__':
     print(f'Saving model as {torch_model_filename}')
     torch.save(model.state_dict(), torch_model_filename)
 
+    end_time = datetime.now()
+    print(f'Training run ended at: {end_time}')
+    print(f'Training run duration: {end_time - start_time}')
+
+    """
+    start_time = datetime.now()
+    print(f'Testing run started at: {start_time}')
+    
     # Load model
     model = CNN(num_channels=num_channels,
                 image_width=image_width,
@@ -334,47 +299,11 @@ if __name__ == '__main__':
     print(f'Load model: {torch_model_filename}')
     model.load_state_dict(torch.load(torch_model_filename))
     model.eval()
-
-    end_time = datetime.now()
-    print(f'Training run ended at: {end_time}')
-    print(f'Training run duration: {end_time - start_time}')
-
-    start_time = datetime.now()
-    print(f'Testing run started at: {start_time}')
-
+    
+    # Test model
     test_result = trainer.test(model, datamodule=dm)
-
-    print('*************************************')
-    print(f'Test loss: {test_result[0]["loss"]}')
-    print(f'Test accuracy: {test_result[0]["acc"]}')
-    print('*************************************')
 
     end_time = datetime.now()
     print(f'Testing run ended at: {end_time}')
     print(f'Testing run duration: {end_time - start_time}')
-
-    # Test model
-    """
-    test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(
-            data_folder,
-            train=False,
-            download=False,
-            transform=transforms.ToTensor()),
-        batch_size=args.batch_size, shuffle=True)
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            output = model(data)
-            test_loss += F.cross_entropy(output,
-                                         target, reduction='sum').item()
-            # get the index of the max log-probability
-            pred = output.argmax(dim=1, keepdim=True)
-            correct += pred.eq(target.view_as(pred)).sum().item()
-
-    test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
     """
