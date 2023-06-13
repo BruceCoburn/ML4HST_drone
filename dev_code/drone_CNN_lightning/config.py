@@ -3,7 +3,7 @@ This file contains all the parameters that are used in the training and testing 
 """
 
 # Image specific parameters
-NUM_IMAGES = 1
+NUM_DUMMY_IMAGES = 1
 NUM_CHANNELS = 3
 IMAGE_WIDTH = 960
 IMAGE_HEIGHT = 720

@@ -14,7 +14,17 @@ class ImageDataModule(pl.LightningDataModule):
         super(ImageDataModule, self).__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
-        self.transform = transforms.Compose(
+
+        # Transformations to be applied to our test images
+        self.transform_train = transforms.Compose(
+            [
+                transforms.Resize((image_width, image_height)),
+                transforms.ToTensor(),
+            ]
+        )
+
+        # Transformations to be applied to our validation/test images
+        self.transform_test = transforms.Compose(
             [
                 transforms.Resize((image_width, image_height)),
                 transforms.ToTensor(),
@@ -31,13 +41,13 @@ class ImageDataModule(pl.LightningDataModule):
         # This method is used for splitting the dataset into train, validation, and test datasets
         # It is called every time the trainer is initialized or the data module is re-initialized
         self.train_dataset = datasets.ImageFolder(
-            root=self.data_dir + "/Train", transform=self.transform
+            root=self.data_dir + "/Train", transform=self.transform_train
         )
         self.val_dataset = datasets.ImageFolder(
-            root=self.data_dir + "/Val", transform=self.transform
+            root=self.data_dir + "/Val", transform=self.transform_test
         )
         self.test_dataset = datasets.ImageFolder(
-            root=self.data_dir + "/Test", transform=self.transform
+            root=self.data_dir + "/Test", transform=self.transform_test
         )
 
     def train_dataloader(self):

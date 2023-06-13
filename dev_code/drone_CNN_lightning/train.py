@@ -16,7 +16,6 @@ if __name__ == "__main__":
     print(f"Training run started at: {start_time}")
 
     # Set image dimensions
-    num_channels = config.NUM_CHANNELS
     image_width, image_height = resize_image_dimensions(
         image_width=config.IMAGE_WIDTH,
         image_height=config.IMAGE_HEIGHT,
@@ -33,7 +32,10 @@ if __name__ == "__main__":
 
     # Create an instance of our model
     model = CNN_lightning(
-        num_channels=num_channels, image_width=image_width, image_height=image_height
+        num_dummy_images=config.NUM_DUMMY_IMAGES,
+        num_channels=config.NUM_CHANNELS,
+        image_width=image_width,
+        image_height=image_height,
     )
 
     # Define the EarlyStopping callback
@@ -42,6 +44,7 @@ if __name__ == "__main__":
         patience=config.EARLY_STOPPING_PATIENCE,  # number of epochs to wait before stopping
         verbose=True,  # log information to the terminal
         mode="min",  # look for minimum validation loss
+        min_delta=0.0,  # minimum change in validation loss to qualify as an improvement
     )
 
     # Create an instance of our trainer, and train the model
