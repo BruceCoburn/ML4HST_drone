@@ -1,3 +1,12 @@
+"""
+This script trains a CNN model using PyTorch Lightning for our Drone Obstacle Dataset.
+
+The model architecture is defined in CNN_lightning.py, the data module defined in ImageDataModule.py, and the
+parameters are defined in config.py.
+
+Note that this script is HEAVILY reliant on parameters found in config.py
+"""
+
 # Import Python-native modules
 import torch
 import pytorch_lightning as pl
@@ -13,7 +22,7 @@ import config
 if __name__ == "__main__":
     # Kickoff the timing of the training run
     start_time = datetime.now()
-    print(f"Training run started at: {start_time}")
+    print(f"---- Training run started at: {start_time}")
 
     # Set image dimensions
     image_width, image_height = resize_image_dimensions(
@@ -40,11 +49,11 @@ if __name__ == "__main__":
 
     # Define the EarlyStopping callback
     early_stop_callback = EarlyStopping(
-        monitor="val_loss",  # monitor the validation loss
+        monitor="val_acc",  # parameter to monitor
+        mode='max',  # direction to monitor (ex: 'min' for loss, 'max' for acc)
         patience=config.EARLY_STOPPING_PATIENCE,  # number of epochs to wait before stopping
         verbose=True,  # log information to the terminal
-        mode="min",  # look for minimum validation loss
-        min_delta=0.0,  # minimum change in validation loss to qualify as an improvement
+        min_delta=config.MIN_DELTA,  # minimum change in monitored value to qualify as improvement
     )
 
     # Create an instance of our trainer, and train the model
@@ -54,32 +63,33 @@ if __name__ == "__main__":
         accelerator=config.ACCELERATOR,
         devices=config.DEVICES,
         callbacks=[early_stop_callback],
+        log_every_n_steps=config.LOG_EVERY_N_STEPS,
     )
-    print(f"Training model for a max {config.MAX_EPOCHS} epochs")
+    print(f">>>> Training model for a max {config.MAX_EPOCHS} epochs")
     trainer.fit(model, datamodule=dm)
 
     # End the timing of the training run
     end_time = datetime.now()
-    print(f"Training run ended at: {end_time}")
-    print(f"Training run duration: {end_time - start_time}")
+    print(f"---- Training run ended at: {end_time}")
+    print(f"---- Training run duration: {end_time - start_time}")
 
     if config.ALSO_TEST:
         # Test the model
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"Testing run started at: {start_time}")
+        print(f"---- Testing run started at: {start_time}")
         trainer.test(model, datamodule=dm)
 
         # End the timing of the testing run
         end_time = datetime.now()
-        print(f"Testing run ended at: {end_time}")
-        print(f"Testing run duration: {end_time - start_time}")
+        print(f"---- Testing run ended at: {end_time}")
+        print(f"---- Testing run duration: {end_time - start_time}")
 
     if config.SAVE_MODEL:
         # Save model
         torch_model_filename = config.TORCH_MODEL_FILENAME
-        print(f"Saving model as {torch_model_filename}")
+        print(f">>>> Saving model as {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
     """
