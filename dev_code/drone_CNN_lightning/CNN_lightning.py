@@ -9,6 +9,9 @@ import torch.nn as nn
 import torch.optim as optim
 import pytorch_lightning as pl
 
+# Import custom modules
+import config
+
 
 class CNN_lightning(pl.LightningModule):
     """
@@ -127,7 +130,7 @@ class CNN_lightning(pl.LightningModule):
         """
         Configure the optimizer
         """
-        opt = optim.Adam(self.parameters(), lr=0.001)
+        opt = optim.Adam(self.parameters(), lr=config.LEARNING_RATE)
         return opt
 
     def training_step(self, batch, batch_idx):
