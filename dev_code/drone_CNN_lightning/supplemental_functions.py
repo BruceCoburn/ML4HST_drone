@@ -7,6 +7,7 @@ directly related to the main functionality of the file.
 import os
 import shutil
 import random
+from decimal import Decimal
 
 
 def resize_image_dimensions(image_width, image_height, size_reduction_factor):
@@ -33,6 +34,10 @@ def calculate_split_ratio(image_list, split_ratio):
     """
     Calculate the number of images for each split (in total)
     """
+    decimal_split_ratio = tuple(Decimal(entry) for entry in split_ratio)
+    if sum(decimal_split_ratio) != 1:
+        raise ValueError("Entries in 'split_ratio' do not add up to 1, please modify SPLIT_RATIO in config.py")
+    
     total_images = len(image_list)
     train_ratio, val_ratio, test_ratio = split_ratio
     train_count = int(total_images * train_ratio)

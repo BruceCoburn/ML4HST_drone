@@ -16,6 +16,7 @@ IMAGE_HEIGHT = 720
 # Hardware parameters
 ACCELERATOR = "gpu"
 DEVICES = [0]  # Default: [0] (i.e. use only the first GPU)
+NUM_WORKERS = 4
 
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
