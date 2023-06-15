@@ -50,15 +50,15 @@ class CNN_lightning(pl.LightningModule):
         self.architecture.add_module("relu1", self.relu1)
         output_shape = self._get_layer_output_shape("relu1", self.architecture)
 
-        # Batch normalization layer
-        self.b1 = nn.BatchNorm2d(output_shape[1])
-        self.architecture.add_module("b1", self.b1)
-        output_shape = self._get_layer_output_shape("b1", self.architecture)
-
         # Max pooling layer
         self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module("maxpool1", self.maxpool1)
         output_shape = self._get_layer_output_shape("maxpool1", self.architecture)
+
+        # Batch normalization layer
+        self.b1 = nn.BatchNorm2d(output_shape[1])
+        self.architecture.add_module("b1", self.b1)
+        output_shape = self._get_layer_output_shape("b1", self.architecture)
 
         ###############################
         # Convolution Layer 2
@@ -81,15 +81,15 @@ class CNN_lightning(pl.LightningModule):
         self.architecture.add_module("relu2", self.relu2)
         output_shape = self._get_layer_output_shape("relu2", self.architecture)
 
-        # Batch normalization layer
-        self.b2 = nn.BatchNorm2d(output_shape[1])
-        self.architecture.add_module("b2", self.b2)
-        output_shape = self._get_layer_output_shape("b2", self.architecture)
-
         # Max pooling layer
         self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module("maxpool2", self.maxpool2)
         output_shape = self._get_layer_output_shape("maxpool2", self.architecture)
+
+        # Batch normalization layer
+        self.b2 = nn.BatchNorm2d(output_shape[1])
+        self.architecture.add_module("b2", self.b2)
+        output_shape = self._get_layer_output_shape("b2", self.architecture)
 
         ###############################
         # Flatten Layer
