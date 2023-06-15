@@ -42,7 +42,7 @@ SPLIT_RATIO = (0.8, 0.1, 0.1)
 # Training parameters
 BATCH_SIZE = 32
 MAX_EPOCHS = 20
-MIN_EPOCHS = 5
+MIN_EPOCHS = 10
 LEARNING_RATE = 0.001
 
 # Early Stopping parameters
