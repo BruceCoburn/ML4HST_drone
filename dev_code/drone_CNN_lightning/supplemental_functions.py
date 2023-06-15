@@ -36,8 +36,10 @@ def calculate_split_ratio(image_list, split_ratio):
     """
     split_ratio_sum = sum(split_ratio)
     if not math.isclose(split_ratio_sum, 1.0, rel_tol=1e-5):
-        raise ValueError(f"Entries in 'split_ratio' do not add up to 1, add to {split_ratio_sum}, please modify SPLIT_RATIO in config.py")
-    
+        raise ValueError(
+            f"Entries in 'split_ratio' do not add up to 1, add to {split_ratio_sum}, please modify SPLIT_RATIO in config.py"
+        )
+
     total_images = len(image_list)
     train_ratio, val_ratio, test_ratio = split_ratio
     train_count = int(total_images * train_ratio)

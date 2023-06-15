@@ -8,8 +8,7 @@ import os
 
 
 class VideoStreamTello(object):
-    def __init__(self, unit_dp=30, window_name="Drone Camera",
-                 collect_data=True):
+    def __init__(self, unit_dp=30, window_name="Drone Camera", collect_data=True):
         # Establish Tello() object
         self.tello = Tello()
 
@@ -21,23 +20,23 @@ class VideoStreamTello(object):
 
         # Create a command dictionary where we expect a single keyword
         self.state_dictionary = {
-            'kill': self.kill_sequence,
-            'l': self.initiate_land,
-            't': self.initiate_takeoff,
-            'diag': self.diag,
+            "kill": self.kill_sequence,
+            "l": self.initiate_land,
+            "t": self.initiate_takeoff,
+            "diag": self.diag,
         }
 
         # Create a command dictionary where we expect a single keyword AND a
         # parameter
         self.movement_dictionary = {
-            'w': self.tello.move_forward,
-            's': self.tello.move_back,
-            'a': self.tello.move_left,
-            'd': self.tello.move_right,
-            'e': self.tello.rotate_clockwise,
-            'q': self.tello.rotate_counter_clockwise,
-            'r': self.tello.move_up,
-            'f': self.tello.move_down
+            "w": self.tello.move_forward,
+            "s": self.tello.move_back,
+            "a": self.tello.move_left,
+            "d": self.tello.move_right,
+            "e": self.tello.rotate_clockwise,
+            "q": self.tello.rotate_counter_clockwise,
+            "r": self.tello.move_up,
+            "f": self.tello.move_down,
         }
 
         # Turn on the video stream from the tello
@@ -53,7 +52,7 @@ class VideoStreamTello(object):
         # self.collect_data = collect_data
 
         # Establish object attributes
-        self.unit_dp = unit_dp          # Length of spatial displacement
+        self.unit_dp = unit_dp  # Length of spatial displacement
         self.window_name = window_name  # Name of the video stream popup window
         # Boolean flag to determine whether the tello is on the ground
         self.landed = True
@@ -66,8 +65,8 @@ class VideoStreamTello(object):
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
-        self.base_directory = 'raw_data'
-        self.image_extension = '.jpg'
+        self.base_directory = "raw_data"
+        self.image_extension = ".jpg"
 
         # These attributes are also necessary for saving frames from the camera
         # feed, but will be altered from other methods
@@ -105,31 +104,32 @@ class VideoStreamTello(object):
         """
 
         # Check for existing run directories
-        self.existing_runs = [dir_name for dir_name in os.listdir(
-            self.base_directory) if dir_name.startswith('run')]
+        self.existing_runs = [
+            dir_name
+            for dir_name in os.listdir(self.base_directory)
+            if dir_name.startswith("run")
+        ]
 
         # Determine the run number
         self.run_number = len(self.existing_runs) + 1
-        self.nice_print(
-            f'Number of existing run directories: {self.run_number}')
+        self.nice_print(f"Number of existing run directories: {self.run_number}")
 
         # Establish the new directory name
-        self.directory_name = f'run{self.run_number:03}'
+        self.directory_name = f"run{self.run_number:03}"
 
         # Check if the directory already exists
         while self.directory_name in self.existing_runs:
             self.nice_print(
-                f'"{self.directory_name}" already exists. Incrementing run number...')
+                f'"{self.directory_name}" already exists. Incrementing run number...'
+            )
             self.run_number += 1
-            self.directory_name = f'run{self.run_number:03}'
+            self.directory_name = f"run{self.run_number:03}"
 
         # Create the new directory
-        self.nice_print(f'Creating {self.directory_name}...')
+        self.nice_print(f"Creating {self.directory_name}...")
         os.makedirs(
-            os.path.join(
-                self.base_directory,
-                self.directory_name),
-            exist_ok=True)
+            os.path.join(self.base_directory, self.directory_name), exist_ok=True
+        )
 
     def image_save(self):
         """
@@ -141,14 +141,15 @@ class VideoStreamTello(object):
             try:
                 # Create timestamp which will be used for the saved image
                 # filename (creates timestamp down to the millisecond)
-                self.timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+                self.timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
 
                 # Generate the filename using the timestamp
                 self.filename = self.timestamp + self.image_extension
 
                 # Set the path for the new image
                 self.image_path = os.path.join(
-                    self.base_directory, self.directory_name, self.filename)
+                    self.base_directory, self.directory_name, self.filename
+                )
 
                 # Save the image in the new directory
                 cv2.imwrite(self.image_path, self.img)
@@ -171,17 +172,17 @@ class VideoStreamTello(object):
         Method for a nice print of a '*' lined border!
         """
         border_length = len(string) + 4
-        border = '*' * border_length
+        border = "*" * border_length
 
         print(border)
-        print(f'* {string} *')
+        print(f"* {string} *")
         print(border)
 
     def query_battery(self):
         """
         Method to query and print the current battery percentage of the tello
         """
-        print(f'Battery Life: {self.tello.query_battery()}%')
+        print(f"Battery Life: {self.tello.query_battery()}%")
 
     def update_frame(self):
         """
@@ -227,20 +228,19 @@ class VideoStreamTello(object):
         if len(command_list) == 1:
             try:
                 requested_command = self.state_dictionary[command_list[0]]
-                print(f'Calling {requested_command.__name__}')
+                print(f"Calling {requested_command.__name__}")
                 requested_command()
             except KeyError:
-                print(f'Attempted the following command: {command_list}')
+                print(f"Attempted the following command: {command_list}")
         elif len(command_list) == 2:
             try:
                 requested_command = self.movement_dictionary[command_list[0]]
-                print(
-                    f'Calling {requested_command.__name__} {command_list[1]}')
+                print(f"Calling {requested_command.__name__} {command_list[1]}")
                 requested_command(int(command_list[1]))
             except KeyError:
-                print(f'Attempted the following command: {command_list}')
+                print(f"Attempted the following command: {command_list}")
         else:
-            print(f'Unrecognized inputs: {command_list}')
+            print(f"Unrecognized inputs: {command_list}")
 
         # Get remaining battery percentage after each command has been sent
         self.query_battery()
@@ -249,45 +249,44 @@ class VideoStreamTello(object):
         """
         Method to print out the current state of various Boolean values
         """
-        print(f'stream: {self.stream}')
-        print(f'landed: {self.landed}')
-        print(f'main_loop: {self.main_loop}')
-        print(f'save: {self.save}')
+        print(f"stream: {self.stream}")
+        print(f"landed: {self.landed}")
+        print(f"main_loop: {self.main_loop}")
+        print(f"save: {self.save}")
 
     def kill_sequence(self):
         """
         Method to completely stop all Tello operations other than the connection
         """
 
-        print(f'killing main loop...')
+        print(f"killing main loop...")
         if self.main_loop:
             self.main_loop = False
 
-        print(f'killing stream...')
+        print(f"killing stream...")
         if self.stream:
             self.tello.streamoff()
             self.stream = False
 
-        print(f'killing landing...')
+        print(f"killing landing...")
         if not self.landed:
             self.tello.land()
             self.landed = True
 
-        print(f'killing popups...')
+        print(f"killing popups...")
         if self.popup:
             cv2.waitKey(1)
             cv2.destroyAllWindows()
             cv2.waitKey(1)
             self.popup = False
 
-        print(f'killing save state...')
+        print(f"killing save state...")
         if self.save:
             self.save = False
 
 
 # Main script execution
 if __name__ == "__main__":
-
     # Start timing how long this script takes to run
     start_time = time.time()
 
@@ -300,7 +299,7 @@ if __name__ == "__main__":
         try:
             tello_video_stream.poll_keystrokes()
         except KeyboardInterrupt:
-            print(f'!!!Interrupted!!!')
+            print(f"!!!Interrupted!!!")
 
             # Stop our main loop
             tello_video_stream.main_loop = False
@@ -316,5 +315,7 @@ if __name__ == "__main__":
     end_time = time.time() - start_time
 
     # Print our ending information
-    print(f'Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_end} seconds')
-    print(f'done with main loop in {end_time} seconds...')
+    print(
+        f"Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_end} seconds"
+    )
+    print(f"done with main loop in {end_time} seconds...")

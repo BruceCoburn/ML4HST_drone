@@ -26,7 +26,9 @@ class VideoStreamTello(object):
         # Establish object attributes
         self.unit_dp = unit_dp  # Length of spatial displacement
         self.window_name = window_name  # Name of the video stream popup window
-        self.landed = True  # Boolean flag to determine whether the tello is on the ground
+        self.landed = (
+            True  # Boolean flag to determine whether the tello is on the ground
+        )
         self.stream = True  # Boolean flag to determine whether the tello should be streaming or not
         self.popup = True
         self.main_loop = True
@@ -58,7 +60,7 @@ class VideoStreamTello(object):
         """
         Method to query and print the current battery percentage of the tello
         """
-        print(f'Battery Life: {self.tello.query_battery()}%')
+        print(f"Battery Life: {self.tello.query_battery()}%")
 
     def update_frame(self):
         """
@@ -85,52 +87,65 @@ class VideoStreamTello(object):
         """
         command = input("Enter input: ")
 
-        if command == 'kill':
-            print(f'self kill')
+        if command == "kill":
+            print(f"self kill")
             self.killSequence()
-        elif command == 'w':
+        elif command == "w":
             # self.tello.move_forward(self.unit_dp)
-            self.tello.send_rc_control(self.no_velocity, self.forward_velocity,
-                                       self.no_velocity, self.no_velocity)
-        elif command == 's':
+            self.tello.send_rc_control(
+                self.no_velocity,
+                self.forward_velocity,
+                self.no_velocity,
+                self.no_velocity,
+            )
+        elif command == "s":
             # self.tello.move_back(self.unit_dp)
-            self.tello.send_rc_control(self.no_velocity, self.backward_velocity,
-                                       self.no_velocity, self.no_velocity)
-        elif command == 'a':
+            self.tello.send_rc_control(
+                self.no_velocity,
+                self.backward_velocity,
+                self.no_velocity,
+                self.no_velocity,
+            )
+        elif command == "a":
             # self.tello.move_left(self.unit_dp)
-            self.tello.send_rc_control(self.left_velocity, self.no_velocity,
-                                       self.no_velocity, self.no_velocity)
-        elif command == 'd':
+            self.tello.send_rc_control(
+                self.left_velocity, self.no_velocity, self.no_velocity, self.no_velocity
+            )
+        elif command == "d":
             # self.tello.move_right(self.unit_dp)
-            self.tello.send_rc_control(self.right_velocity, self.no_velocity,
-                                       self.no_velocity, self.no_velocity)
-        elif command == 'e':
+            self.tello.send_rc_control(
+                self.right_velocity,
+                self.no_velocity,
+                self.no_velocity,
+                self.no_velocity,
+            )
+        elif command == "e":
             self.tello.rotate_clockwise(self.unit_dp)
-        elif command == 'q':
+        elif command == "q":
             self.tello.rotate_counter_clockwise(self.unit_dp)
-        elif command == 'r':
+        elif command == "r":
             self.tello.move_up(self.unit_dp)
-        elif command == 'f':
+        elif command == "f":
             self.tello.move_down(self.unit_dp)
-        elif command == 'l':
+        elif command == "l":
             self.tello.land()
             self.landed = True
-        elif ((command == 't') and (self.landed == True)):
+        elif (command == "t") and (self.landed == True):
             self.tello.takeoff()
             self.landed = False
-        elif command == 'diag':
-            print(f'diag')
+        elif command == "diag":
+            print(f"diag")
             self.diag()
         else:
-            print(f'command: {command}')
+            print(f"command: {command}")
 
     def diag(self):
-        print(f'stream: {self.stream}')
-        print(f'landed: {self.landed}')
-        print(f'main_loop: {self.main_loop}')
+        print(f"stream: {self.stream}")
+        print(f"landed: {self.landed}")
+        print(f"main_loop: {self.main_loop}")
 
     def killSequence(self):
-        print(f'killing...')
+        print(f"killing...")
 
         if self.main_loop:
             self.main_loop = False
@@ -156,9 +171,9 @@ if __name__ == "__main__":
         try:
             tello_video_stream.poll_keystrokes()
         except KeyboardInterrupt:
-            print(f'!!!Interrupted!!!')
+            print(f"!!!Interrupted!!!")
             tello_video_stream.main_loop = False
             tello_video_stream.killSequence()
             tello_video_stream.video_stream_t.join()
 
-    print(f'done with main loop...')
+    print(f"done with main loop...")

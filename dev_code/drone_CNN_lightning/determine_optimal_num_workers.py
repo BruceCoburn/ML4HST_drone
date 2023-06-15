@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 
+
 def measure_data_loading_time(mnist_dir, num_workers):
     """
     Measure the data loading time for the MNIST dataset using the DataLoader class in PyTorch.
@@ -30,6 +31,7 @@ def measure_data_loading_time(mnist_dir, num_workers):
 
     return execution_time
 
+
 def nice_print(string_in):
     """
     Print a string in a nice format
@@ -42,10 +44,10 @@ def nice_print(string_in):
     print(f"* {string_in} *")
     print(bottom_border)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # Define the directory where the MNIST dataset will be downloaded
-    mnist_dir = 'data/'
+    mnist_dir = "data/"
 
     # Define the range of num_workers values to test
     num_workers_values = [1, 2, 4, 8, 12, 16]

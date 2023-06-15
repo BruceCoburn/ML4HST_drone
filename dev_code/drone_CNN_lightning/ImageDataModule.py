@@ -51,19 +51,19 @@ class ImageDataModule(pl.LightningDataModule):
         self.train_dataset = datasets.ImageFolder(
             root=self.data_dir + "/Train", transform=self.transform_train
         )
-        self._nice_print(f'Length of training dataset: {len(self.train_dataset)}')
+        self._nice_print(f"Length of training dataset: {len(self.train_dataset)}")
 
         # Create validation dataset
         self.val_dataset = datasets.ImageFolder(
             root=self.data_dir + "/Val", transform=self.transform_test
         )
-        self._nice_print(f'Length of validation dataset: {len(self.val_dataset)}')
+        self._nice_print(f"Length of validation dataset: {len(self.val_dataset)}")
 
         # Create test dataset
         self.test_dataset = datasets.ImageFolder(
             root=self.data_dir + "/Test", transform=self.transform_test
         )
-        self._nice_print((f'Length of test dataset: {len(self.test_dataset)}'))
+        self._nice_print((f"Length of test dataset: {len(self.test_dataset)}"))
 
     def train_dataloader(self):
         return DataLoader(

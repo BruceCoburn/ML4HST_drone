@@ -23,7 +23,9 @@ if __name__ == "__main__":
     # Kickoff the timing of the training run
     start_time = datetime.now()
     print(f"---- Training run started at: {start_time}")
-    print(f'----> Training using device: {torch.cuda.get_device_name(torch.cuda.current_device())}')
+    print(
+        f"----> Training using device: {torch.cuda.get_device_name(torch.cuda.current_device())}"
+    )
 
     # Set image dimensions
     image_width, image_height = resize_image_dimensions(

@@ -5,7 +5,7 @@ tello = Tello()
 tello.connect()
 tello.takeoff()
 
-print(f'sdk_version: {tello.query_sdk_version()}')
+print(f"sdk_version: {tello.query_sdk_version()}")
 
 """
 tello.move_left(100)

@@ -30,7 +30,7 @@ LOG_EVERY_N_STEPS = 1
 # Parameters related to dataset "re-scrambling"
 DATASET_FILE_EXT = ".jpg"
 SOURCE_FOLDER = "C:\\Users\\bcoburn1\OneDrive - University of Wyoming\\Desktop\\ML4HST_drone\\dev_code\\playground\\reference_CNN_lightning_model\\obstacle_dataset"
-DESTINATION_FOLDER = 'DRONE_OBSTACLES' # Uncomment this if you want to augment the 'original' dataset directory
+DESTINATION_FOLDER = "DRONE_OBSTACLES"  # Uncomment this if you want to augment the 'original' dataset directory
 # DESTINATION_FOLDER = "DRONE_OBSTACLES_RESCRAMBLE"
 CLASS_A_NAME = "BLOCKED"
 CLASS_B_NAME = "UNBLOCKED"

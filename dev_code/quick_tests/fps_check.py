@@ -36,7 +36,7 @@ while True:
         start_time = time.time()
 
     # Check for 'q' keypress to exit the loop
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # Clean up
