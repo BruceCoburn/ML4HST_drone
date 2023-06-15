@@ -16,7 +16,7 @@ IMAGE_HEIGHT = 720
 # Hardware parameters
 ACCELERATOR = "gpu"
 DEVICES = [0]  # Default: [0] (i.e. use only the first GPU)
-NUM_WORKERS = 4
+NUM_WORKERS = 4 # Determined as optimal from determine_optimal_num_workers.py
 
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
@@ -40,14 +40,14 @@ SPLIT_RATIO = (0.8, 0.1, 0.1)
 # Hyperparameters
 ##################################
 # Training parameters
-BATCH_SIZE = 32
-MAX_EPOCHS = 20
-MIN_EPOCHS = 10
+BATCH_SIZE = 64
+MAX_EPOCHS = 50
+MIN_EPOCHS = 5
 LEARNING_RATE = 0.001
 
 # Early Stopping parameters
 EARLY_STOPPING_PATIENCE = 3
-MIN_DELTA = 0.01
+MIN_DELTA = 0.005
 
 # Transformation parameters
 SIZE_REDUCTION_FACTOR = 3
