@@ -49,8 +49,8 @@ if __name__ == "__main__":
 
     # Define the EarlyStopping callback
     early_stop_callback = EarlyStopping(
-        monitor="val_acc",  # parameter to monitor
-        mode="max",  # direction to monitor (ex: 'min' for loss, 'max' for acc)
+        monitor="val_loss",  # parameter to monitor
+        mode="min",  # direction to monitor (ex: 'min' for loss, 'max' for acc)
         patience=config.EARLY_STOPPING_PATIENCE,  # number of epochs to wait before stopping
         verbose=True,  # log information to the terminal
         min_delta=config.MIN_DELTA,  # minimum change in monitored value to qualify as improvement
