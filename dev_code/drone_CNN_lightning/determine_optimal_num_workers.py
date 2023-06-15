@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # Find the optimal num_workers value with the minimum loading time
     optimal_num_workers = num_workers_values[loading_times.index(min(loading_times))]
 
-    nice_print("OPTIMAL NUM_WORKERS:", optimal_num_workers)
+    nice_print("OPTIMAL NUM_WORKERS:" + str(optimal_num_workers))
 
     # Delete the MNIST dataset directory
     shutil.rmtree(mnist_dir)
