@@ -16,4 +16,10 @@ The structure for this repo will be as follows:
     + exported virtual environment to align on the Python Packages used
 
 Drone Obstacle Dataset (./DRONE_OBSTACLES) can be found and downloaded from the following Google Drive link: https://drive.google.com/drive/folders/12EsJg-sO3LIuRX_C-Lc-aXwpTvWMLvBK?usp=sharing
-+ Put this directory in the same directory as ~/ML4HST/dev_code/playground/reference_CNN_lightning_model/generate_obstacle_CNN_lightning.py (for now)
++ This automatically gives sub-directories of Train/ Test/ and Val/ for easier usage of datasets.ImageFolder() object
++ Put this directory in the same directory as ~/ML4HST/dev_code/drone_CNN_lightning/train.py (for now)
+
+Raw Drone Obstacle Dataset (./obstacle_dataset) can be found and downloaded from the following Google Drive link: https://drive.google.com/drive/folders/1BLVCnFsPHkJczSPstAs8UnKTrwB9Cd4x?usp=sharing
++ This is a more 'raw' version of the dataset (only two sub-directories 'BLOCKED/' and 'UNBLOCKED/' corresponding to our two classes)
++ If you download the dataset through this method, you first need to utilize ~/ML4HST/dev_code/drone_CNN_lightning/dataset_rescramble.py to partition our dataset into corresponding
++   Train/ Test/ and Val/ sub-directories. Once this has been done, then we can use ~/ML4HST/dev_code/drone_CNN_lightning/train.py
