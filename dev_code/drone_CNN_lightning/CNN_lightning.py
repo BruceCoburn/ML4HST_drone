@@ -60,6 +60,11 @@ class CNN_lightning(pl.LightningModule):
         self.architecture.add_module("b1", self.b1)
         output_shape = self._get_layer_output_shape("b1", self.architecture)
 
+        # Dropout layer
+        self.dropout1 = nn.Dropout2d(p=0.25)
+        self.architecture.add_module("dropout1", self.dropout1)
+        output_shape = self._get_layer_output_shape("dropout1", self.architecture)
+
         ###############################
         # Convolution Layer 2
         ###############################
