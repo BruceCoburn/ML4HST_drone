@@ -95,15 +95,17 @@ if __name__ == "__main__":
         print(f">>>> Saving model as {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
-    """
     # Example code to load (from a '.pt' file) and test model
     start_time = datetime.now()
     print(f'Testing run started at: {start_time}')
 
     # Load model
-    model = CNN_lightning(num_channels=num_channels,
-                image_width=image_width,
-                image_height=image_height)
+    model = CNN_lightning(
+        num_dummy_images=config.NUM_DUMMY_IMAGES,
+        num_channels=config.NUM_CHANNELS,
+        image_width=image_width,
+        image_height=image_height,
+    )
     print(f'Load model: {torch_model_filename}')
     model.load_state_dict(torch.load(torch_model_filename))
     model.eval()
@@ -114,4 +116,4 @@ if __name__ == "__main__":
     end_time = datetime.now()
     print(f'Testing run ended at: {end_time}')
     print(f'Testing run duration: {end_time - start_time}')
-    """
+    print(f'Test result: {test_result}')
