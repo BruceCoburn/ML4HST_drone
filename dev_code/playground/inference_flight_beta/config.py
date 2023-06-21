@@ -23,7 +23,7 @@ NUM_WORKERS = 4  # Determined as optimal from determine_optimal_num_workers.py
 DATA_DIR = "DRONE_OBSTACLES"
 
 # Logging/Saving parameters
-TORCH_MODEL_FILENAME = "drone_obstacle_cnn.pt"
+TORCH_MODEL_FILENAME = "drone_obstacle_cnn_8857.pt"
 ALSO_TEST = True
 SAVE_MODEL = True
 LOG_EVERY_N_STEPS = 1
