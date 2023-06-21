@@ -149,7 +149,9 @@ class VideoStreamTello(object):
             resized_image = resize_transform(self.most_recent_image)
 
             # Feed the image to the inference model
-            self.inference_model(resized_image)
+            blocked_or_unblocked = self.inference_model(resized_image)
+
+            self.nice_print(f'blocked_or_unblocked: {blocked_or_unblocked}')
 
             # Wait for a bit before trying again
             time.sleep(self.image_refresh_rate)
