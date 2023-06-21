@@ -19,7 +19,7 @@ class VideoStreamTello(object):
         self,
         unit_dp=30,
         window_name="Drone Camera",
-        collect_data=True,
+        run_inference=True,
         save_images=True,
         inference_model_filepath=config.TORCH_MODEL_FILENAME,
     ):
@@ -82,7 +82,6 @@ class VideoStreamTello(object):
         self.num_images_written = 0
         self.time_to_save_imgs_start = 0
         self.time_to_save_imgs_end = 0
-        # self.collect_data = collect_data
 
         # Establish object attributes
         self.unit_dp = unit_dp  # Length of spatial displacement
@@ -99,7 +98,7 @@ class VideoStreamTello(object):
         self.main_loop = True
 
         self.save = save_images
-        self.collect_data = collect_data
+        self.run_inference = run_inference
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
@@ -127,14 +126,14 @@ class VideoStreamTello(object):
         self.image_save_t = Thread(target=self.image_save, args=())
         self.image_save_t.start()
 
-        self.collect_data_t = Thread(target=self.run_through_inference, args=())
-        self.collect_data_t.start()
+        self.inference_t = Thread(target=self.run_through_inference, args=())
+        self.inference_t.start()
 
     def run_through_inference(self):
         """
         Method to collect the most recently saved image from the camera feed, and feed it to the inference model
         """
-        while self.collect_data:
+        while self.run_inference:
             # Resize the image to the dimensions expected by the inference model
             image_width, image_height = resize_image_dimensions(
                 image_width=config.IMAGE_WIDTH,
@@ -151,7 +150,7 @@ class VideoStreamTello(object):
             # Feed the image to the inference model
             blocked_or_unblocked = self.inference_model(resized_image)
 
-            self.nice_print(f'blocked_or_unblocked: {blocked_or_unblocked}')
+            self.nice_print(f'p(blocked_or_unblocked): {blocked_or_unblocked}')
 
             # Wait for a bit before trying again
             time.sleep(self.image_refresh_rate)
@@ -343,7 +342,7 @@ class VideoStreamTello(object):
         print(f"landed: {self.landed}")
         print(f"main_loop: {self.main_loop}")
         print(f"save: {self.save}")
-        print(f"collect_data: {self.collect_data}")
+        print(f"run_inference: {self.run_inference}")
 
     def kill_sequence(self):
         """
@@ -376,5 +375,5 @@ class VideoStreamTello(object):
             self.save = False
 
         print(f"killing collect data state...")
-        if self.collect_data:
-            self.collect_data = False
+        if self.run_inference:
+            self.run_inference = False

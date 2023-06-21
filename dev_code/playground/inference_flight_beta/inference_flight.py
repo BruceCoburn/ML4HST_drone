@@ -39,7 +39,7 @@ if __name__ == "__main__":
             # Join our running threads
             tello_video_stream.video_stream_t.join()
             tello_video_stream.image_save_t.join()
-            tello_video_stream.collect_data_t.join()
+            tello_video_stream.inference_t.join()
 
     # Calculate how long our script takes to run
     end_time = time.time() - start_time

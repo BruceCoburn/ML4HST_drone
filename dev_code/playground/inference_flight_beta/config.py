@@ -9,7 +9,7 @@ NUM_DUMMY_IMAGES = 1
 NUM_CHANNELS = 3
 IMAGE_WIDTH = 960
 IMAGE_HEIGHT = 720
-IMAGE_REFRESH_RATE = 0.1
+IMAGE_REFRESH_RATE = 0.2
 
 ##################################
 # User specific parameters
