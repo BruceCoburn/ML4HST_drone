@@ -149,8 +149,10 @@ class VideoStreamTello(object):
 
             # Feed the image to the inference model
             blocked_or_unblocked = self.inference_model(resized_image)
+            blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
 
-            self.nice_print(f'p(blocked_or_unblocked): {blocked_or_unblocked}')
+            # self.nice_print(f'p(blocked_or_unblocked): {blocked_or_unblocked}')
+            self._inline_print(f"p(blocked_or_unblocked): {blocked_or_unblocked}")
 
             # Wait for a bit before trying again
             time.sleep(self.image_refresh_rate)
@@ -377,3 +379,13 @@ class VideoStreamTello(object):
         print(f"killing collect data state...")
         if self.run_inference:
             self.run_inference = False
+
+    def _inline_print(self, string, verbose=True):
+        """
+        Method to print a string inline
+        """
+        if verbose:
+            # Clear the line
+            print_string = "\b" * len(string)
+            print(print_string, end="", flush=True)
+            print(string, end="", flush=True)

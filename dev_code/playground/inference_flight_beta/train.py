@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     # Example code to load (from a '.pt' file) and test model
     start_time = datetime.now()
-    print(f'Testing run started at: {start_time}')
+    print(f"Testing run started at: {start_time}")
 
     # Load model
     model = CNN_lightning(
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         image_width=image_width,
         image_height=image_height,
     )
-    print(f'Load model: {torch_model_filename}')
+    print(f"Load model: {torch_model_filename}")
     model.load_state_dict(torch.load(torch_model_filename))
     model.eval()
 
@@ -114,6 +114,6 @@ if __name__ == "__main__":
     test_result = trainer.test(model, datamodule=dm)
 
     end_time = datetime.now()
-    print(f'Testing run ended at: {end_time}')
-    print(f'Testing run duration: {end_time - start_time}')
-    print(f'Test result: {test_result}')
+    print(f"Testing run ended at: {end_time}")
+    print(f"Testing run duration: {end_time - start_time}")
+    print(f"Test result: {test_result}")
