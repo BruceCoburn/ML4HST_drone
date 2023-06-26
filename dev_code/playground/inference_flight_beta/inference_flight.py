@@ -3,12 +3,7 @@ This Python script aims to load and utilize an inference model to classify image
 """
 
 # Import python-native modules
-import datetime
-from djitellopy import Tello
-import cv2
 import time
-from threading import Thread
-import os
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello

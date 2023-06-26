@@ -208,7 +208,8 @@ class CNN_lightning(pl.LightningModule):
             print(f"Output shape after {name}: {model_in(self.dummy_input).shape}")
         return model_in(self.dummy_input).shape
 
-    def _nice_print(self, string_in):
+    @staticmethod
+    def _nice_print(string_in):
         """
         Print a string in a nice format
         """
