@@ -157,8 +157,9 @@ class VideoStreamTello(object):
             # Wait for a bit before trying again
             time.sleep(self.image_refresh_rate)
 
+    @staticmethod
     def resize_image_dimensions(
-        self, image_width, image_height, size_reduction_factor, verbose=False
+        image_width, image_height, size_reduction_factor, verbose=False
     ):
         """
         This function takes in original image dimensions and returns the new
@@ -257,7 +258,8 @@ class VideoStreamTello(object):
 
         self.time_to_save_imgs_end = time.time() - self.time_to_save_imgs_start
 
-    def nice_print(self, string):
+    @staticmethod
+    def nice_print(string):
         """
         Method for a nice print of a '*' lined border!
         """
@@ -380,7 +382,8 @@ class VideoStreamTello(object):
         if self.run_inference:
             self.run_inference = False
 
-    def _inline_print(self, string, verbose=True):
+    @staticmethod
+    def _inline_print(string, verbose=True):
         """
         Method to print a string inline
         """

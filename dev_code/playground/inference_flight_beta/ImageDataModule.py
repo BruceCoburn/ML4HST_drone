@@ -89,7 +89,8 @@ class ImageDataModule(pl.LightningDataModule):
             num_workers=config.NUM_WORKERS,
         )
 
-    def _nice_print(self, string_in):
+    @staticmethod
+    def _nice_print(string_in):
         """
         Print a string in a nice format
         """
