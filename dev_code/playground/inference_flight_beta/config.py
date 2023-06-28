@@ -17,15 +17,18 @@ IMAGE_REFRESH_RATE = 0.2
 # Hardware parameters
 ACCELERATOR = "gpu"
 DEVICES = [0]  # Default: [0] (i.e. use only the first GPU)
-NUM_WORKERS = 4  # Determined as optimal from determine_optimal_num_workers.py
+NUM_WORKERS = 1  # Determined as optimal from determine_optimal_num_workers.py
 
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
 
 # Logging/Saving parameters
-TORCH_MODEL_FILENAME = "drone_obstacle_cnn_8857.pt"
+TORCH_MODEL_FILENAME = "drone_obstacle_cnn"
+TORCH_MODEL_FILENAME_EXT = ".pt"
+TORCH_MODEL_FILENAME_LOAD = "drone_obstacle_cnn_acc_0.81.pt"
 ALSO_TEST = True
 SAVE_MODEL = True
+LOAD_AND_TEST = False
 LOG_EVERY_N_STEPS = 1
 
 # Parameters related to dataset "re-scrambling"

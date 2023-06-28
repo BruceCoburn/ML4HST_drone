@@ -11,7 +11,7 @@ from torchvision import transforms
 # Import custom modules
 import config
 from CNN_lightning import CNN_lightning
-from supplemental_functions import resize_image_dimensions
+# from supplemental_functions import resize_image_dimensions
 
 
 class VideoStreamTello(object):
@@ -135,10 +135,11 @@ class VideoStreamTello(object):
         """
         while self.run_inference:
             # Resize the image to the dimensions expected by the inference model
-            image_width, image_height = resize_image_dimensions(
+            image_width, image_height = self.resize_image_dimensions(
                 image_width=config.IMAGE_WIDTH,
                 image_height=config.IMAGE_HEIGHT,
                 size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
+                verbose=True,
             )
 
             # Create the resize transform
