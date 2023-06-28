@@ -21,7 +21,7 @@ class VideoStreamTello(object):
         window_name="Drone Camera",
         run_inference=True,
         save_images=True,
-        inference_model_filepath=config.TORCH_MODEL_FILENAME,
+        inference_model_filepath=config.INFERENCE_MODEL_FILENAME,
     ):
         if inference_model_filepath is None:
             raise ValueError(

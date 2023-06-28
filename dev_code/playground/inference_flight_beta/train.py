@@ -10,7 +10,7 @@ Note that this script is HEAVILY reliant on parameters found in config.py
 # Import Python-native modules
 import torch
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks import EarlyStopping
+from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from datetime import datetime
 import warnings
 
@@ -63,13 +63,22 @@ if __name__ == "__main__":
         min_delta=config.MIN_DELTA,  # minimum change in monitored value to qualify as improvement
     )
 
+    # Define the ModelCheckpoint callback
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=config.CHECKPOINT_DIR,
+        filename="model-{epoch:02d}-{val_loss:.2f}",
+        save_top_k=1,
+        monitor="val_loss",
+        mode="min",
+    )
+
     # Create an instance of our trainer, and train the model
     trainer = pl.Trainer(
         max_epochs=config.MAX_EPOCHS,
         min_epochs=config.MIN_EPOCHS,
         accelerator=config.ACCELERATOR,
         devices=config.DEVICES,
-        callbacks=[early_stop_callback],
+        callbacks=[early_stop_callback, checkpoint_callback],
         log_every_n_steps=config.LOG_EVERY_N_STEPS,
     )
     print(f">>>> Training model for a max {config.MAX_EPOCHS} epochs")
