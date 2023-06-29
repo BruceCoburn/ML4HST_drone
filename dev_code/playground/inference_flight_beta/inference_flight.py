@@ -7,6 +7,7 @@ import time
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello
+import config
 
 
 # Main script execution
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Create VideoStreamTello() object
-    tello_video_stream = VideoStreamTello(save_images=False)
+    tello_video_stream = VideoStreamTello(save_images=config.SAVE_IMAGES)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)
@@ -36,11 +37,14 @@ if __name__ == "__main__":
             tello_video_stream.image_save_t.join()
             tello_video_stream.inference_t.join()
 
+    if config.SAVE_IMAGES:
+        # Print our 'saving images' information
+        print(
+            f"Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_start} seconds"
+        )
+
     # Calculate how long our script takes to run
     end_time = time.time() - start_time
 
     # Print our ending information
-    print(
-        f"Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_end} seconds"
-    )
     print(f"done with main loop in {end_time} seconds...")

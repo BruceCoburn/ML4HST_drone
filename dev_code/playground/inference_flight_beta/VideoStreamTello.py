@@ -106,6 +106,9 @@ class VideoStreamTello(object):
 
         self.save = save_images
         self.run_inference = run_inference
+        self.blocked_or_unblocked = (
+            5.5555  # Default to a 'weird' value (so we can tell if it has been updated)
+        )
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
@@ -122,8 +125,9 @@ class VideoStreamTello(object):
         self.image_path = None
 
         # Image save based methods
-        self.instantiate_base_directory()
-        self.check_for_run_directories()
+        if self.save:
+            self.instantiate_base_directory()
+            self.check_for_run_directories()
 
         # Threading is necessary to concurrently display the live video feed, get keystrokes from user, and save
         # images from the camera feed
@@ -148,8 +152,10 @@ class VideoStreamTello(object):
                 size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
             )
 
-            # Create the resize transform
-            resize_transform = transforms.Resize((image_width, image_height))
+            # Create the resize transform (passing in 'antialias' parameter to suppress warning)
+            resize_transform = transforms.Resize(
+                (image_width, image_height), antialias=True
+            )
 
             # Store the most recent image from the camera feed
             inference_image = self.most_recent_image
@@ -170,8 +176,8 @@ class VideoStreamTello(object):
             blocked_or_unblocked = self.inference_model(resized_image)
             blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
 
-            # self.nice_print(f'p(blocked_or_unblocked): {blocked_or_unblocked}')
-            self._inline_print(f"p(blocked_or_unblocked): {blocked_or_unblocked}")
+            # Update the blocked_or_unblocked attribute
+            self.blocked_or_unblocked = blocked_or_unblocked
 
             # Wait for a bit before trying again
             time.sleep(self.image_refresh_rate)
@@ -306,7 +312,23 @@ class VideoStreamTello(object):
                 self.camera_frame = self.tello.get_frame_read()
                 self.img = self.camera_frame.frame
                 self.most_recent_image = self.img
+                self.window_name = "Drone Camera"
+
+                # Display the blocked/unblocked probability to the popup window
+                text = "p(blocked_or_unblocked):" + str(self.blocked_or_unblocked)
+                cv2.putText(
+                    self.img,
+                    text,
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (0, 0, 255),
+                    2,
+                )
+
+                # Display the image in a popup window
                 cv2.imshow(self.window_name, self.img)
+
                 # 'waitKey' is necessary to properly display a cv2 popup window
                 cv2.waitKey(1)
             except KeyboardInterrupt:

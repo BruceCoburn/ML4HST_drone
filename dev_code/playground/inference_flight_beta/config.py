@@ -32,6 +32,7 @@ TEST_AND_SAVE_MODEL_PT = True
 TEST_BEST_MODEL_CKPT = True
 LOAD_AND_TEST = False
 LOG_EVERY_N_STEPS = 1
+SAVE_IMAGES = False
 
 # Parameters related to dataset "re-scrambling"
 DATASET_FILE_EXT = ".jpg"
