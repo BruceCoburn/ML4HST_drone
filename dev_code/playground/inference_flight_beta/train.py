@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Define the ModelCheckpoint callback
     checkpoint_callback = ModelCheckpoint(
         dirpath=config.CHECKPOINT_DIR,
-        filename="model-{epoch:02d}-{val_loss:.2f}",
+        filename="model-{epoch:02d}-{val_loss:.4f}",
         save_top_k=1,
         monitor="val_loss",
         mode="min",
@@ -89,47 +89,36 @@ if __name__ == "__main__":
     print(f"---- Training run ended at: {end_time}")
     print(f"---- Training run duration: {end_time - start_time}")
 
-    if config.ALSO_TEST:
+    if config.TEST_AND_SAVE_MODEL_PT:
         # Test the model
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"---- Testing run started at: {start_time}")
+        print(f"---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' started at: {start_time}")
         test_results = trainer.test(model, datamodule=dm)
 
         # End the timing of the testing run
         end_time = datetime.now()
-        print(f"---- Testing run ended at: {end_time}")
-        print(f"---- Testing run duration: {end_time - start_time}")
+        print(f"---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' ended at: {end_time}")
+        print(f"---- Testing run duration for model '{config.TORCH_MODEL_FILENAME_EXT}': {end_time - start_time}")
 
-    if config.SAVE_MODEL:
         # Save model
         test_acc = test_results[0]["test_acc"]
-        torch_model_filename = config.TORCH_MODEL_FILENAME + f'_acc_{test_acc:.2f}' + config.TORCH_MODEL_FILENAME_EXT
+        torch_model_filename = config.TORCH_MODEL_FILENAME + f'_acc_{test_acc:.4f}' + config.TORCH_MODEL_FILENAME_EXT
         print(f">>>> Saving model as {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
-    # Example code to load (from a '.pt' file) and test model
-    start_time = datetime.now()
-    print(f"Testing run started at: {start_time}")
+    if config.TEST_AND_SAVE_MODEL_CKPT:
+        # Test the model ckpt
+        checkpoint_path = checkpoint_callback.best_model_path
+        print(f'Saved model checkpoint path: {checkpoint_path}')
 
-    if config.LOAD_AND_TEST:
-        # Load model
-        model = CNN_lightning(
-            num_dummy_images=config.NUM_DUMMY_IMAGES,
-            num_channels=config.NUM_CHANNELS,
-            image_width=image_width,
-            image_height=image_height,
-        )
-        print(f"Load model: {torch_model_filename}")
-        torch_model_filename_load = config.TORCH_MODEL_FILENAME_LOAD
-        model.load_state_dict(torch.load(torch_model_filename))
-        model.eval()
+        # Kickoff the timing of the testing run
+        start_time = datetime.now()
+        print(f"---- Testing run for model '{checkpoint_path}' started at: {start_time}")
+        test_results = trainer.test(model, ckpt_path=checkpoint_path, datamodule=dm)
 
-        # Test model
-        test_result = trainer.test(model, datamodule=dm)
-
+        # End the timing of the testing run
         end_time = datetime.now()
-        print(f"Testing run ended at: {end_time}")
-        print(f"Testing run duration: {end_time - start_time}")
-        print(f"Test result: {test_result}")
+        print(f"---- Testing run for model '{checkpoint_path}' ended at: {end_time}")
+        print(f"---- Testing run duration for model '{checkpoint_path}': {end_time - start_time}")

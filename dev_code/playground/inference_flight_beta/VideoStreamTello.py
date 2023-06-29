@@ -11,7 +11,6 @@ from torchvision import transforms
 # Import custom modules
 import config
 from CNN_lightning import CNN_lightning
-# from supplemental_functions import resize_image_dimensions
 
 
 class VideoStreamTello(object):
