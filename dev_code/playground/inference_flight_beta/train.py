@@ -22,6 +22,7 @@ import config
 
 # Disable PossibleUserWarning for the "num_workers" argument in the DataLoader
 warnings.filterwarnings("ignore", message="The dataloader, .*")
+warnings.filterwarnings("ignore", message="Checkpoint directory .* does not exist.")
 
 if __name__ == "__main__":
     # Kickoff the timing of the training run
@@ -94,7 +95,7 @@ if __name__ == "__main__":
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' started at: {start_time}")
+        print(f"\n\n---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' started at: {start_time}")
         test_results = trainer.test(model, datamodule=dm)
 
         # End the timing of the testing run
@@ -108,14 +109,13 @@ if __name__ == "__main__":
         print(f">>>> Saving model as {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
-    if config.TEST_AND_SAVE_MODEL_CKPT:
+    if config.TEST_BEST_MODEL_CKPT:
         # Test the model ckpt
         checkpoint_path = checkpoint_callback.best_model_path
-        print(f'Saved model checkpoint path: {checkpoint_path}')
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"---- Testing run for model '{checkpoint_path}' started at: {start_time}")
+        print(f"\n\n---- Testing run for model '{checkpoint_path}' started at: {start_time}")
         test_results = trainer.test(model, ckpt_path=checkpoint_path, datamodule=dm)
 
         # End the timing of the testing run

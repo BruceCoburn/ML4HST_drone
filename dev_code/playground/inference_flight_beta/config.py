@@ -29,7 +29,7 @@ TORCH_MODEL_FILENAME_LOAD = "drone_obstacle_cnn_acc_0.81.pt"
 INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.81.pt"
 CHECKPOINT_DIR = "checkpoints"
 TEST_AND_SAVE_MODEL_PT = True
-TEST_AND_SAVE_MODEL_CKPT = True
+TEST_BEST_MODEL_CKPT = True
 LOAD_AND_TEST = False
 LOG_EVERY_N_STEPS = 1
 
