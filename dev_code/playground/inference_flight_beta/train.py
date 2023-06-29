@@ -95,17 +95,27 @@ if __name__ == "__main__":
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"\n\n---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' started at: {start_time}")
+        print(
+            f"\n\n---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' started at: {start_time}"
+        )
         test_results = trainer.test(model, datamodule=dm)
 
         # End the timing of the testing run
         end_time = datetime.now()
-        print(f"---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' ended at: {end_time}")
-        print(f"---- Testing run duration for model '{config.TORCH_MODEL_FILENAME_EXT}': {end_time - start_time}")
+        print(
+            f"---- Testing run for model '{config.TORCH_MODEL_FILENAME_EXT}' ended at: {end_time}"
+        )
+        print(
+            f"---- Testing run duration for model '{config.TORCH_MODEL_FILENAME_EXT}': {end_time - start_time}"
+        )
 
         # Save model
         test_acc = test_results[0]["test_acc"]
-        torch_model_filename = config.TORCH_MODEL_FILENAME + f'_acc_{test_acc:.4f}' + config.TORCH_MODEL_FILENAME_EXT
+        torch_model_filename = (
+            config.TORCH_MODEL_FILENAME
+            + f"_acc_{test_acc:.4f}"
+            + config.TORCH_MODEL_FILENAME_EXT
+        )
         print(f">>>> Saving model as {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
@@ -115,10 +125,14 @@ if __name__ == "__main__":
 
         # Kickoff the timing of the testing run
         start_time = datetime.now()
-        print(f"\n\n---- Testing run for model '{checkpoint_path}' started at: {start_time}")
+        print(
+            f"\n\n---- Testing run for model '{checkpoint_path}' started at: {start_time}"
+        )
         test_results = trainer.test(model, ckpt_path=checkpoint_path, datamodule=dm)
 
         # End the timing of the testing run
         end_time = datetime.now()
         print(f"---- Testing run for model '{checkpoint_path}' ended at: {end_time}")
-        print(f"---- Testing run duration for model '{checkpoint_path}': {end_time - start_time}")
+        print(
+            f"---- Testing run duration for model '{checkpoint_path}': {end_time - start_time}"
+        )
