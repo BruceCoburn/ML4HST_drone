@@ -7,6 +7,7 @@ from threading import Thread
 import os
 import torch
 from torchvision import transforms
+from PIL import Image
 
 # Import custom modules
 import config
@@ -145,14 +146,25 @@ class VideoStreamTello(object):
                 image_width=config.IMAGE_WIDTH,
                 image_height=config.IMAGE_HEIGHT,
                 size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
-                verbose=True,
             )
 
             # Create the resize transform
             resize_transform = transforms.Resize((image_width, image_height))
 
+            # Store the most recent image from the camera feed
+            inference_image = self.most_recent_image
+
+            # Convert the image to a PIL image
+            inference_image = Image.fromarray(inference_image)
+
+            # Convert the image to a tensor
+            inference_image = transforms.ToTensor()(inference_image)
+
+            # Add a batch dimension to the image (Model expects 4D input - originally a 3D input)
+            inference_image = inference_image.unsqueeze(0)
+
             # Apply the transform to the image prior to feeding it to the inference model
-            resized_image = resize_transform(self.most_recent_image)
+            resized_image = resize_transform(inference_image)
 
             # Feed the image to the inference model
             blocked_or_unblocked = self.inference_model(resized_image)
