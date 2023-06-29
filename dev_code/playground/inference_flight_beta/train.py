@@ -22,7 +22,7 @@ import config
 
 # Disable PossibleUserWarning for the "num_workers" argument in the DataLoader
 warnings.filterwarnings("ignore", message="The dataloader, .*")
-warnings.filterwarnings("ignore", message="Checkpoint directory .* does not exist.")
+warnings.filterwarnings("ignore", message="Checkpoint directory .* exists and is not empty.")
 
 if __name__ == "__main__":
     # Kickoff the timing of the training run
