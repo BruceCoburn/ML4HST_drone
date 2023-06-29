@@ -27,12 +27,19 @@ class VideoStreamTello(object):
                 "inference_model cannot be None, please include a filepath to the inference model"
             )
 
+        # Resize image dimensions prior to network initialization
+        image_width, image_height = self.resize_image_dimensions(
+            image_width=config.IMAGE_WIDTH,
+            image_height=config.IMAGE_HEIGHT,
+            size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
+        )
+
         # Load our inference model
         self.inference_model = CNN_lightning(
             num_dummy_images=config.NUM_DUMMY_IMAGES,
             num_channels=config.NUM_CHANNELS,
-            image_width=config.IMAGE_WIDTH,
-            image_height=config.IMAGE_HEIGHT,
+            image_width=image_width,
+            image_height=image_height,
         )
         print(f"Load model: {inference_model_filepath}")
         self.inference_model.load_state_dict(torch.load(inference_model_filepath))
