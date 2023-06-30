@@ -23,7 +23,9 @@ class ImageDataModule(pl.LightningDataModule):
             [
                 transforms.Resize((image_width, image_height)),
                 transforms.RandomRotation(degrees=config.RANDOM_ROTATION_DEGREES),
-                transforms.RandomHorizontalFlip(p=config.RANDOM_HORIZONTAL_FLIP_PERCENTAGE),
+                transforms.RandomHorizontalFlip(
+                    p=config.RANDOM_HORIZONTAL_FLIP_PERCENTAGE
+                ),
                 transforms.RandomAffine(degrees=config.RANDOM_AFFINE_DEGREES),
                 transforms.ToTensor(),
             ]

@@ -23,7 +23,6 @@ class VideoStreamTello(object):
         save_images=True,
         inference_model_filepath=config.INFERENCE_MODEL_FILENAME,
     ):
-
         # Ensure that a valid model filepath is provided
         if inference_model_filepath is None:
             raise ValueError(
@@ -85,12 +84,18 @@ class VideoStreamTello(object):
         # display purposes)
         self.camera_frame = self.tello.get_frame_read()
 
-        self.img = self.camera_frame.frame # Get the current frame (instantiate as some image)
-        self.most_recent_image = self.img # Instantiate the most recent image as the current image
+        self.img = (
+            self.camera_frame.frame
+        )  # Get the current frame (instantiate as some image)
+        self.most_recent_image = (
+            self.img
+        )  # Instantiate the most recent image as the current image
 
-        self.num_images_written = 0 # Initialize the number of images written to 0
-        self.time_to_save_imgs_start = 0 # Initialize the start time for saving images to 0
-        self.time_to_save_imgs_end = 0 # Initialize the end time for saving images to 0
+        self.num_images_written = 0  # Initialize the number of images written to 0
+        self.time_to_save_imgs_start = (
+            0  # Initialize the start time for saving images to 0
+        )
+        self.time_to_save_imgs_end = 0  # Initialize the end time for saving images to 0
 
         # Establish object attributes
         self.unit_dp = unit_dp  # Length of spatial displacement
@@ -100,30 +105,42 @@ class VideoStreamTello(object):
             config.IMAGE_REFRESH_RATE
         )  # How often to refresh the video stream
         ################################################
-        self.landed = True # Boolean flag to determine whether the tello is on the ground
-        self.stream = True # Boolean flag to determine whether the Tello is streaming video
-        self.popup = True # Boolean flag to determine whether the video stream popup window is open
-        self.main_loop = True # Boolean flag to determine whether the main loop is running
+        self.landed = (
+            True  # Boolean flag to determine whether the tello is on the ground
+        )
+        self.stream = (
+            True  # Boolean flag to determine whether the Tello is streaming video
+        )
+        self.popup = True  # Boolean flag to determine whether the video stream popup window is open
+        self.main_loop = (
+            True  # Boolean flag to determine whether the main loop is running
+        )
 
-        self.save = save_images # Boolean flag to determine whether to save images from the camera feed
-        self.run_inference = run_inference # Boolean flag to determine whether to run inference on the camera feed
-        self.blocked_or_unblocked = (
-            5.5555  # Default to a 'weird' value (so we can tell if it has been updated)
-        ) # This is the value that will be updated by the inference model (0 = blocked, 1 = unblocked)
+        self.save = save_images  # Boolean flag to determine whether to save images from the camera feed
+        self.run_inference = run_inference  # Boolean flag to determine whether to run inference on the camera feed
+        self.blocked_or_unblocked = 5.5555  # Default to a 'weird' value (so we can tell if it has been updated)  # This is the value that will be updated by the inference model (0 = blocked, 1 = unblocked)
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
-        self.base_directory = config.COLLECTION_BASE_DIR # Base directory for saving images (should be 'raw_data')
-        self.image_extension = config.DATASET_FILE_EXT  # Image extension (should be '.jpg')
+        self.base_directory = (
+            config.COLLECTION_BASE_DIR
+        )  # Base directory for saving images (should be 'raw_data')
+        self.image_extension = (
+            config.DATASET_FILE_EXT
+        )  # Image extension (should be '.jpg')
 
         # These attributes are also necessary for saving frames from the camera
         # feed, but will be altered from other methods
-        self.existing_runs = None # List of existing runs (directories) in the base directory
-        self.run_number = None # Run number (directory number) for the current run
-        self.directory_name = None # Name of the current run directory
-        self.timestamp = None # Timestamp for the current image (to be used as the filename)
-        self.filename = None # Filename for the current image (utilizing timestamp and image extension)
-        self.image_path = None # Full path to the current image (utilizing the base directory, run directory, and filename)
+        self.existing_runs = (
+            None  # List of existing runs (directories) in the base directory
+        )
+        self.run_number = None  # Run number (directory number) for the current run
+        self.directory_name = None  # Name of the current run directory
+        self.timestamp = (
+            None  # Timestamp for the current image (to be used as the filename)
+        )
+        self.filename = None  # Filename for the current image (utilizing timestamp and image extension)
+        self.image_path = None  # Full path to the current image (utilizing the base directory, run directory, and filename)
 
         # Image save based methods
         if self.save:
