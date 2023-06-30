@@ -65,3 +65,12 @@ MIN_DELTA = 0.005
 
 # Transformation parameters
 SIZE_REDUCTION_FACTOR = 3
+
+##################################
+# Transformation parameters
+##################################
+RANDOM_ROTATION_DEGREES = 15
+RANDOM_HORIZONTAL_FLIP_PERCENTAGE = 0.25
+RANDOM_AFFINE_DEGREES = 15
+RANDOM_VERTICAL_FLIP_PERCENTAGE = 0.25
+RANDOM_CROP_PERCENTAGE = 0.1
