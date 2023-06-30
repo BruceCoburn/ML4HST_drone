@@ -69,9 +69,9 @@ def classify_image(image_path, model, image_width, image_height):
 
         # Convert the output to a class prediction (and associate it with the class label))
         if output.item() > 0.5:
-            predicted_class = 1
+            predicted_class = 1 # config.CLASS_A_NAME (I think)
         else:
-            predicted_class = 0
+            predicted_class = 0 # config.CLASS_B_NAME (I think)
 
     # print(f'\predicted_class: {predicted_class}')
     return predicted_class

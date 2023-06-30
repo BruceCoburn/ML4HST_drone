@@ -200,3 +200,15 @@ def create_folder_if_not_exists(folder_path):
     else:
         print(f"---- Folder already exists: {folder_path}")
         delete_images_in_folder(folder_path)
+
+
+def nice_print(string):
+    """
+    Method for a nice print of a '*' lined border!
+    """
+    border_length = len(string) + 4
+    border = "*" * border_length
+
+    print(border)
+    print(f"* {string} *")
+    print(border)

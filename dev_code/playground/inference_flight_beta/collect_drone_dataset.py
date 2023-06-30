@@ -1,5 +1,8 @@
 """
-This Python script aims to load and utilize an inference model to classify images from a Tello drone's camera.
+This Python script aims to connect to a Tello Drone and save images from its camera to a local directory.
+
+The user still maintains control of the drone, but it is recommended to hold and rotate the drone while the
+camera feed is being saved. This will allow for more distinct control while obtaining the dataset.
 """
 
 # Import python-native modules
@@ -10,7 +13,6 @@ from VideoStreamTello import VideoStreamTello
 import config
 from supplemental_functions import nice_print
 
-
 # Main script execution
 if __name__ == "__main__":
     # Start timing how long this script takes to run
@@ -18,8 +20,7 @@ if __name__ == "__main__":
 
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
-    # Ensure the config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
-    tello_video_stream = VideoStreamTello(save_images=config.SAVE_IMAGES)
+    tello_video_stream = VideoStreamTello(save_images=True)
     ########################################################################
 
     # Enter our main execution loop (can only be exited via a user input
@@ -51,4 +52,4 @@ if __name__ == "__main__":
     end_time = time.time() - start_time
 
     # Print our ending information
-    nice_print(f"done with main loop in {end_time} seconds...")
+    nice_print(f"Done with main loop in {end_time} seconds...")
