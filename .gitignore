@@ -169,6 +169,7 @@ lightning_logs/
 
 # Ignore datasets
 raw_data/
+sorted_data/
 run026/
 run027/
 DRONE_OBSTACLES/

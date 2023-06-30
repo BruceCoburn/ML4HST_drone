@@ -22,11 +22,15 @@ NUM_WORKERS = 1  # Determined as optimal from determine_optimal_num_workers.py
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
 
+# Data sorting parameters (with usage of binary_classification_automatic_labelling.py)
+RAW_DATA_DIR = "raw_data"  # Directory storing the collected data from the drone
+SORTED_DATA_DIR = "sorted_data"  # Directory to store the sorted data
+
 # Logging/Saving parameters
 TORCH_MODEL_FILENAME = "drone_obstacle_cnn"
 TORCH_MODEL_FILENAME_EXT = ".pt"
-TORCH_MODEL_FILENAME_LOAD = "drone_obstacle_cnn_acc_0.81.pt"
-INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.81.pt"
+TORCH_MODEL_FILENAME_LOAD = "drone_obstacle_cnn_acc_0.8571.pt"
+INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.8571.pt"
 CHECKPOINT_DIR = "checkpoints"
 TEST_AND_SAVE_MODEL_PT = True
 TEST_BEST_MODEL_CKPT = True

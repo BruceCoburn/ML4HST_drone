@@ -10,7 +10,9 @@ import random
 import math
 
 
-def resize_image_dimensions(image_width, image_height, size_reduction_factor):
+def resize_image_dimensions(
+    image_width, image_height, size_reduction_factor, verbose=True
+):
     """
     This function takes in original image dimensions and returns the new
     image dimensions after applying a size reduction factor.
@@ -21,11 +23,12 @@ def resize_image_dimensions(image_width, image_height, size_reduction_factor):
     new_width = int(new_width)
     new_height = int(new_height)
 
-    print(f"========================================================")
-    print(f"\tsize_reduction_factor: {size_reduction_factor}")
-    print(f"Resizing image_width from {image_width} to {new_width}")
-    print(f"Resizing image_height from {image_height} to {new_height}")
-    print(f"========================================================")
+    if verbose:
+        print(f"========================================================")
+        print(f"\tsize_reduction_factor: {size_reduction_factor}")
+        print(f"Resizing image_width from {image_width} to {new_width}")
+        print(f"Resizing image_height from {image_height} to {new_height}")
+        print(f"========================================================")
 
     return new_width, new_height
 

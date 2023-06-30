@@ -19,7 +19,14 @@ class CNN_lightning(pl.LightningModule):
     https://lightning.ai/docs/pytorch/stable/
     """
 
-    def __init__(self, num_dummy_images, num_channels, image_width, image_height):
+    def __init__(
+        self,
+        num_dummy_images,
+        num_channels,
+        image_width,
+        image_height,
+        verbose=True,
+    ):
         super(CNN_lightning, self).__init__()
 
         # Dummy input to calculate the output shape of each layer
@@ -32,7 +39,7 @@ class CNN_lightning(pl.LightningModule):
         ###############################
         # Convolution Layer 1
         ###############################
-        self._nice_print("Convolution Layer 1")
+        self._nice_print("Convolution Layer 1", verbose=verbose)
 
         # Explicit convolution layer
         self.conv1 = nn.Conv2d(
@@ -43,32 +50,42 @@ class CNN_lightning(pl.LightningModule):
             padding=0,
         )
         self.architecture.add_module("conv1", self.conv1)
-        output_shape = self._get_layer_output_shape("conv1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "conv1", self.architecture, print_shape=verbose
+        )
 
         # ReLU activation layer
         self.relu1 = nn.ReLU()
         self.architecture.add_module("relu1", self.relu1)
-        output_shape = self._get_layer_output_shape("relu1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "relu1", self.architecture, print_shape=verbose
+        )
 
         # Max pooling layer
         self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module("maxpool1", self.maxpool1)
-        output_shape = self._get_layer_output_shape("maxpool1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "maxpool1", self.architecture, print_shape=verbose
+        )
 
         # Batch normalization layer
         self.b1 = nn.BatchNorm2d(output_shape[1])
         self.architecture.add_module("b1", self.b1)
-        output_shape = self._get_layer_output_shape("b1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "b1", self.architecture, print_shape=verbose
+        )
 
         # Dropout layer
         self.dropout1 = nn.Dropout2d(p=0.25)
         self.architecture.add_module("dropout1", self.dropout1)
-        output_shape = self._get_layer_output_shape("dropout1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "dropout1", self.architecture, print_shape=verbose
+        )
 
         ###############################
         # Convolution Layer 2
         ###############################
-        self._nice_print("Convolution Layer 2")
+        self._nice_print("Convolution Layer 2", verbose=verbose)
 
         # Explicit convolution layer
         self.conv2 = nn.Conv2d(
@@ -79,37 +96,47 @@ class CNN_lightning(pl.LightningModule):
             padding=0,
         )
         self.architecture.add_module("conv2", self.conv2)
-        output_shape = self._get_layer_output_shape("conv2", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "conv2", self.architecture, print_shape=verbose
+        )
 
         # ReLU activation layer
         self.relu2 = nn.ReLU()
         self.architecture.add_module("relu2", self.relu2)
-        output_shape = self._get_layer_output_shape("relu2", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "relu2", self.architecture, print_shape=verbose
+        )
 
         # Max pooling layer
         self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.architecture.add_module("maxpool2", self.maxpool2)
-        output_shape = self._get_layer_output_shape("maxpool2", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "maxpool2", self.architecture, print_shape=verbose
+        )
 
         # Batch normalization layer
         self.b2 = nn.BatchNorm2d(output_shape[1])
         self.architecture.add_module("b2", self.b2)
-        output_shape = self._get_layer_output_shape("b2", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "b2", self.architecture, print_shape=verbose
+        )
 
         ###############################
         # Flatten Layer
         ###############################
-        self._nice_print("Flatten Layer")
+        self._nice_print("Flatten Layer", verbose=verbose)
 
         # Flatten layer
         self.flatten = nn.Flatten()
         self.architecture.add_module("flatten", self.flatten)
-        output_shape = self._get_layer_output_shape("flatten", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "flatten", self.architecture, print_shape=verbose
+        )
 
         ###############################
         # Output Layer
         ###############################
-        self._nice_print("Output Layer")
+        self._nice_print("Output Layer", verbose=verbose)
 
         # Fully connected layer
         self.FULLY_CONNECTED_INPUTS = self._get_layer_output_shape(
@@ -117,12 +144,16 @@ class CNN_lightning(pl.LightningModule):
         )[1]
         self.fc1 = nn.Linear(self.FULLY_CONNECTED_INPUTS, 1)
         self.architecture.add_module("fc1", self.fc1)
-        output_shape = self._get_layer_output_shape("fc1", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "fc1", self.architecture, print_shape=verbose
+        )
 
         # Sigmoid activation layer (acting as output)
         self.sigmoid = nn.Sigmoid()
         self.architecture.add_module("sigmoid", self.sigmoid)
-        output_shape = self._get_layer_output_shape("sigmoid", self.architecture)
+        output_shape = self._get_layer_output_shape(
+            "sigmoid", self.architecture, print_shape=verbose
+        )
 
     def forward(self, x):
         """
@@ -209,14 +240,15 @@ class CNN_lightning(pl.LightningModule):
         return model_in(self.dummy_input).shape
 
     @staticmethod
-    def _nice_print(string_in):
+    def _nice_print(string_in, verbose=True):
         """
         Print a string in a nice format
         """
-        border_length = len(string_in) + 4
-        top_border = "*" * border_length
-        bottom_border = "-" * border_length
+        if verbose:
+            border_length = len(string_in) + 4
+            top_border = "*" * border_length
+            bottom_border = "-" * border_length
 
-        print(top_border)
-        print(f"* {string_in} *")
-        print(bottom_border)
+            print(top_border)
+            print(f"* {string_in} *")
+            print(bottom_border)
