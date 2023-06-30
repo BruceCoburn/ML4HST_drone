@@ -154,24 +154,8 @@ def organize_images_with_progress(
     # Close the progress bar
     pbar.close()
 
-    # Calculate the maximum length for formatting
-    # max_length = max(len(class_name) for class_name in classes)
-
     # Print the summary
     for class_name in classes:
-        """
-        print(f"+{'=' * max_length}+")
-        print(f"| Class: {class_name:<{max_length - 1}}|")
-        print(f"|{'-' * max_length}|")
-        for split in ["Test", "Train", "Val"]:
-            count_str = str(count[class_name][split])
-            print(f"| {split}: {count_str:<{max_length - 2}}|")
-        print(f"|{'-' * max_length}|")
-        total_str = str(count[class_name]["Total"])
-        print(f"| Total: {total_str:<{max_length - 2}}|")
-        print(f"+{'=' * max_length}+")
-        print()
-        """
         class_str = f'Class: {class_name}'
         max_length = len(class_str) + 2
         print(f"+{'=' * max_length}+")
