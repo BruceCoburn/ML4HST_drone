@@ -1,4 +1,4 @@
-# Import relevant modules
+# Import Python-native modules
 import datetime
 from djitellopy import Tello
 import cv2
@@ -452,8 +452,9 @@ class VideoStreamTello(object):
             """
             If the drone is blocked, then it will randomly turn left or right until it is unblocked.
 
-            Establish a random number between 0 and 1. If the number is less than self.threshold (default: 0.5), then
-            the drone will move left. If the number is greater than 0.5, then the drone will move right.
+            Establish a random number between 0 and 1. If the number is less than self.random_threshold (default: 0.5),
+            then the drone will move left. If the number is greater than self.random_threshold, then the drone will
+            move right.
             """
             random_number = random.random()
             if random_number < self.random_threshold:  # Turn left
