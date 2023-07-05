@@ -38,14 +38,14 @@ class VideoStreamTello(object):
         ##########################
 
         # Velocity constants
-        self.velocity_val = 10
+        self.velocity_val = 20
         self.no_velocity = 0
 
         # Velocity params - TODO: Check that these values align with expected
         self.left_velocity = -self.velocity_val
         self.right_velocity = self.velocity_val
-        self.forward_velocity = -self.velocity_val
-        self.backward_velocity = self.velocity_val
+        self.forward_velocity = self.velocity_val
+        self.backward_velocity = -self.velocity_val
         self.up_velocity = -self.velocity_val
         self.down_velocity = self.velocity_val
         self.left_turn_velocity = -self.velocity_val
@@ -91,46 +91,73 @@ class VideoStreamTello(object):
             print(f"self kill")
             self.killSequence()
         elif command == "w":
-            # self.tello.move_forward(self.unit_dp)
+            # Move forward
             self.tello.send_rc_control(
-                self.no_velocity,
-                self.forward_velocity,
-                self.no_velocity,
-                self.no_velocity,
+                left_right_velocity=self.no_velocity,
+                forward_backward_velocity=self.forward_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.no_velocity,
             )
         elif command == "s":
-            # self.tello.move_back(self.unit_dp)
+            # Move backward
             self.tello.send_rc_control(
-                self.no_velocity,
-                self.backward_velocity,
-                self.no_velocity,
-                self.no_velocity,
+                left_right_velocity=self.no_velocity,
+                forward_backward_velocity=self.backward_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.no_velocity,
             )
         elif command == "a":
-            # self.tello.move_left(self.unit_dp)
+            # Move left
             self.tello.send_rc_control(
-                self.left_velocity, self.no_velocity, self.no_velocity, self.no_velocity
+                left_right_velocity=self.left_velocity,
+                forward_backward_velocity=self.no_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.no_velocity,
             )
         elif command == "d":
-            # self.tello.move_right(self.unit_dp)
+            # Move right
             self.tello.send_rc_control(
-                self.right_velocity,
-                self.no_velocity,
-                self.no_velocity,
-                self.no_velocity,
+                left_right_velocity=self.right_velocity,
+                forward_backward_velocity=self.no_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.no_velocity,
             )
         elif command == "e":
-            self.tello.rotate_clockwise(self.unit_dp)
+            # Turn right
+            self.tello.send_rc_control(
+                left_right_velocity=self.no_velocity,
+                forward_backward_velocity=self.no_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.right_turn_velocity,
+            )
         elif command == "q":
-            self.tello.rotate_counter_clockwise(self.unit_dp)
+            # Turn left
+            self.tello.send_rc_control(
+                left_right_velocity=self.no_velocity,
+                forward_backward_velocity=self.no_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.left_turn_velocity,
+            )
+        elif command == "stop":
+            # Stop all movement
+            self.tello.send_rc_control(
+                left_right_velocity=self.no_velocity,
+                forward_backward_velocity=self.no_velocity,
+                up_down_velocity=self.no_velocity,
+                yaw_velocity=self.no_velocity,
+            )
         elif command == "r":
+            # Move up
             self.tello.move_up(self.unit_dp)
         elif command == "f":
+            # Move down
             self.tello.move_down(self.unit_dp)
         elif command == "l":
+            # Land
             self.tello.land()
             self.landed = True
         elif (command == "t") and (self.landed == True):
+            # Takeoff
             self.tello.takeoff()
             self.landed = False
         elif command == "diag":
@@ -165,8 +192,13 @@ class VideoStreamTello(object):
 
 
 if __name__ == "__main__":
+    # Start timing how long this script takes to run
+    start_time = time.time()
+
+    # Create a tello object to connect to the tello and initialize the video stream and get user input
     tello_video_stream = VideoStreamTello()
 
+    # Start the video stream and user input threads
     while tello_video_stream.main_loop:
         try:
             tello_video_stream.poll_keystrokes()
@@ -176,4 +208,8 @@ if __name__ == "__main__":
             tello_video_stream.killSequence()
             tello_video_stream.video_stream_t.join()
 
-    print(f"done with main loop...")
+    # End timing how long this script takes to run
+    end_time = time.time()
+
+    # Print out how long this script took to run
+    print(f"Total runtime: {end_time - start_time} seconds")
