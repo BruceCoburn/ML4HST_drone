@@ -40,19 +40,25 @@ class CommandPopup(object):
             """
 
             # Create the button
-            button = tk.Button(self.window, text=text, command=lambda: self.send_command(command))
+            button = tk.Button(
+                self.window, text=text, command=lambda: self.send_command(command)
+            )
 
             # Pack the button
             button.pack(pady=10)
 
         # Create the buttons
-        create_button("Takeoff", "Takeoff")
-        create_button("Land", "Land")
-        create_button("Kill", "Kill")
+        create_button("Takeoff", "t")
+        create_button("Land", "l")
+        create_button("Kill", "kill")
+        create_button("Auto_Nav", "auto_nav")
+        create_button("Stop Auto_Nav", "stop_auto_nav")
+        create_button("Inference", "inference")
+        create_button("Stop Inference", "stop_inference")
 
     def send_command(self, command):
         """
-        This function will send the given command to the Tello drone
+        This function will send the given command to the Tello drone by putting it in the command queue
 
         :param command: (str) The command to be sent to the Tello drone
         """
@@ -63,10 +69,12 @@ class CommandPopup(object):
         # Send the command to the command queue
         self.command_queue.put(command)
 
-
     def start(self):
         """
         This function will start the Tkinter event loop
+
+        For now, this method is unused as the GUI is being updated through window.update() instead of the mainloop()
+        method.
         """
 
         # Start the Tkinter event loop
