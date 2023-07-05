@@ -61,8 +61,8 @@ class VideoStreamTello(object):
         # Create a command dictionary where we expect a single keyword
         self.state_dictionary = {
             "kill": self.kill_sequence,
-            "l": self.initiate_land,
-            "t": self.initiate_takeoff,
+            "land": self.initiate_land,
+            "takeoff": self.initiate_takeoff,
             "diag": self.diag,
             "auto_nav": self.auto_nav,
             "stop_auto_nav": self.stop_auto_nav,
@@ -198,6 +198,10 @@ class VideoStreamTello(object):
         self.auto_control = True
 
     def inference(self):
+        """
+        Method to initiate the auto navigation / control sequence (i.e. run inference, and move the tello based on the
+        inference output)
+        """
         # Change the Boolean flag to run inference to True (read by the inference thread)
         self.run_inference = True
         self.auto_control = False
@@ -222,6 +226,9 @@ class VideoStreamTello(object):
                 )
 
     def stop_inference(self):
+        """
+        Method to stop the auto navigation / control sequence (i.e. stop inference, and stop the tello)
+        """
         if self.run_inference:
             # Change the Boolean flag to run inference to False (read by the inference thread)
             self.run_inference = False

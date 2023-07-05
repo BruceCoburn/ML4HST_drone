@@ -29,21 +29,26 @@ if __name__ == "__main__":
     )
     ########################################################################
 
+    # Create a queue to hold commands from the command popup (to handoff to the VideoStreamTello object)
     command_queue = queue.Queue()
     command_popup = CommandPopup(command_queue)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
+
+        # Update our command popup window
         command_popup.window.update()
+
         try:
-            # tello_video_stream.poll_keystrokes()
+            # Poll our command queue for new commands
             command = command_queue.get_nowait()
-            print(f"Handing off command: {command}")
             tello_video_stream.get_button_command(command)
         except queue.Empty:
+            # If there are no commands, pass
             pass
         except KeyboardInterrupt:
+            # If we receive a KeyboardInterrupt, print a message, initiate the kill sequence, and join our threads
             print(f"!!!Interrupted!!!")
 
             # Stop our main loop

@@ -48,8 +48,8 @@ class CommandPopup(object):
             button.pack(pady=10)
 
         # Create the buttons
-        create_button("Takeoff", "t")
-        create_button("Land", "l")
+        create_button("Takeoff", "takeoff")
+        create_button("Land", "land")
         create_button("Kill", "kill")
         create_button("Auto_Nav", "auto_nav")
         create_button("Stop Auto_Nav", "stop_auto_nav")
