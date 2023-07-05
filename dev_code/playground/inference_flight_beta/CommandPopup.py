@@ -14,7 +14,7 @@ class CommandPopup(object):
     This class is used to create a popup window for the user to click command buttons
     """
 
-    def __init__(self, command_queue):
+    def __init__(self, command_queue, command_dict):
         """
         Initialize the CommandPopup() object
 
@@ -47,14 +47,9 @@ class CommandPopup(object):
             # Pack the button
             button.pack(pady=10)
 
-        # Create the buttons
-        create_button("Takeoff", "takeoff")
-        create_button("Land", "land")
-        create_button("Kill", "kill")
-        create_button("Auto_Nav", "auto_nav")
-        create_button("Stop Auto_Nav", "stop_auto_nav")
-        create_button("Inference", "inference")
-        create_button("Stop Inference", "stop_inference")
+        # Create the buttons based off of the command_dict
+        for key, value in command_dict.items():
+            create_button(key, value)
 
     def send_command(self, command):
         """

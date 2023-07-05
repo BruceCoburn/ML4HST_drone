@@ -11,6 +11,7 @@ from VideoStreamTello import VideoStreamTello
 import config
 from supplemental_functions import nice_print
 from CommandPopup import CommandPopup
+from command_dict import command_dict
 
 
 # Main script execution
@@ -31,12 +32,11 @@ if __name__ == "__main__":
 
     # Create a queue to hold commands from the command popup (to handoff to the VideoStreamTello object)
     command_queue = queue.Queue()
-    command_popup = CommandPopup(command_queue)
+    command_popup = CommandPopup(command_queue=command_queue, command_dict=command_dict)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
-
         # Update our command popup window
         command_popup.window.update()
 
