@@ -51,4 +51,4 @@ if __name__ == "__main__":
     end_time = time.time() - start_time
 
     # Print our ending information
-    nice_print(f"done with main loop in {end_time} seconds...")
+    nice_print(f"Ran Tello code for {end_time} seconds...")
