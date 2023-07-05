@@ -4,11 +4,13 @@ This Python script aims to load and utilize an inference model to classify image
 
 # Import python-native modules
 import time
+import queue
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello
 import config
 from supplemental_functions import nice_print
+from CommandPopup import CommandPopup
 
 
 # Main script execution
@@ -18,15 +20,29 @@ if __name__ == "__main__":
 
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
-    # Ensure the config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
-    tello_video_stream = VideoStreamTello(save_images=config.SAVE_IMAGES)
+    # Ensure that config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
+    # Ensure that config.AUTO_CONTROL is set your preference (True/False) PRIOR to running this script
+    tello_video_stream = VideoStreamTello(
+        save_images=config.SAVE_IMAGES,
+        auto_control=config.AUTO_CONTROL,
+        run_inference=config.RUN_INFERENCE,
+    )
     ########################################################################
+
+    command_queue = queue.Queue()
+    command_popup = CommandPopup(command_queue)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
+        command_popup.window.update()
         try:
-            tello_video_stream.poll_keystrokes()
+            # tello_video_stream.poll_keystrokes()
+            command = command_queue.get_nowait()
+            print(f"Handing off command: {command}")
+            tello_video_stream.get_button_command(command)
+        except queue.Empty:
+            pass
         except KeyboardInterrupt:
             print(f"!!!Interrupted!!!")
 
@@ -40,6 +56,9 @@ if __name__ == "__main__":
             tello_video_stream.video_stream_t.join()
             tello_video_stream.image_save_t.join()
             tello_video_stream.inference_t.join()
+
+    # Destroy command popup window
+    command_popup.window.destroy()
 
     if config.SAVE_IMAGES:
         # Print our 'saving images' information

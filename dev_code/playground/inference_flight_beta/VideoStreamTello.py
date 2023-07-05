@@ -20,6 +20,7 @@ class VideoStreamTello(object):
         self,
         unit_dp=30,
         window_name="Drone Camera",
+        auto_control=True,
         run_inference=True,
         save_images=True,
         inference_model_filepath=config.INFERENCE_MODEL_FILENAME,
@@ -64,6 +65,9 @@ class VideoStreamTello(object):
             "t": self.initiate_takeoff,
             "diag": self.diag,
             "auto_nav": self.auto_nav,
+            "stop_auto_nav": self.stop_auto_nav,
+            "inference": self.inference,
+            "stop_inference": self.stop_inference,
         }
 
         # Create a command dictionary where we expect a single keyword AND a
@@ -119,8 +123,10 @@ class VideoStreamTello(object):
         )
 
         self.save = save_images  # Boolean flag to determine whether to save images from the camera feed
-        # self.run_inference = run_inference  # Boolean flag to determine whether to run inference on the camera feed
-        self.run_inference = False
+        self.run_inference = run_inference  # Boolean flag to determine whether to run inference on the camera feed
+        self.auto_control = (
+            auto_control  # Boolean flag to determine whether to auto control the drone
+        )
 
         # This is the value that will be updated by the inference model
         # (0 = blocked, 1 = unblocked)
@@ -128,10 +134,13 @@ class VideoStreamTello(object):
             5.5555  # Default to a 'weird' value (so we can tell if it has been updated)
         )
 
-        self.threshold = 0.5  # Threshold for determining whether the inference model predicts blocked or unblocked
-        self.random_threshold = 0.5
-        self.forward_speed = 10
-        self.turn_speed = 10
+        self.inference_threshold = 0.5  # Threshold for determining whether the inference model predicts blocked or unblocked
+        self.random_threshold = (
+            0.5  # Threshold for whether the drone should randomly turn left or right
+        )
+        self.forward_speed = 15  # Forward speed for the drone
+        self.turn_speed = 20  # Turn speed for the drone
+        self.turn_wait = 2
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
@@ -180,9 +189,52 @@ class VideoStreamTello(object):
         # If the tello is on the ground, takeoff
         if self.landed:
             self.initiate_takeoff()
+            time.sleep(
+                2
+            )  # Wait a few seconds after takeoff to allow the tello to stabilize
 
         # Change the Boolean flag to run inference to True (read by the inference thread)
         self.run_inference = True
+        self.auto_control = True
+
+    def inference(self):
+        # Change the Boolean flag to run inference to True (read by the inference thread)
+        self.run_inference = True
+        self.auto_control = False
+
+    def stop_auto_nav(self):
+        """
+        Method to stop the auto navigation / control sequence (i.e. stop inference, and stop the tello)
+        """
+
+        if self.auto_control:
+            # Change the Boolean flag to run inference to False (read by the inference thread)
+            # self.run_inference = False
+            self.auto_control = False
+
+            if not self.landed:
+                # Stop the tello in place
+                self.tello.send_rc_control(
+                    left_right_velocity=0,
+                    forward_backward_velocity=0,
+                    up_down_velocity=0,
+                    yaw_velocity=0,
+                )
+
+    def stop_inference(self):
+        if self.run_inference:
+            # Change the Boolean flag to run inference to False (read by the inference thread)
+            self.run_inference = False
+            self.auto_control = False
+
+            if not self.landed:
+                # Stop the tello in place
+                self.tello.send_rc_control(
+                    left_right_velocity=0,
+                    forward_backward_velocity=0,
+                    up_down_velocity=0,
+                    yaw_velocity=0,
+                )
 
     def run_through_inference(self):
         """
@@ -224,14 +276,16 @@ class VideoStreamTello(object):
                 # Update the blocked_or_unblocked attribute
                 self.blocked_or_unblocked = blocked_or_unblocked
 
-                # Pass in the blocked_or_unblocked value to the Tello control method
-                self.auto_control_tello()
+                if self.auto_control:
+                    # Automatically control the tello based on the inference output (self.blocked_or_unblocked)
+                    self.auto_control_tello()
 
                 # Wait for a bit before trying again
                 time.sleep(self.image_refresh_rate)
 
             except KeyboardInterrupt:
                 self.run_inference = False
+                self.auto_control = False
                 break
 
     @staticmethod
@@ -431,6 +485,37 @@ class VideoStreamTello(object):
         # Get remaining battery percentage after each command has been sent
         self.query_battery()
 
+    def get_button_command(self, command):
+        """
+        Method to capture user input (for tello-based movements)
+        """
+
+        # Split the input into separate strings
+        command_list = command.split()
+        self.nice_print(f"Received command: {command_list}")
+
+        # Check whether the input should be decoded using 'state_dictionary' (single keyword)
+        # or using 'movement_dictionary' (single keyword and parameter)
+        if len(command_list) == 1:
+            try:
+                requested_command = self.state_dictionary[command_list[0]]
+                print(f"Calling {requested_command.__name__}")
+                requested_command()
+            except KeyError:
+                print(f"Attempted the following command: {command_list}")
+        elif len(command_list) == 2:
+            try:
+                requested_command = self.movement_dictionary[command_list[0]]
+                print(f"Calling {requested_command.__name__} {command_list[1]}")
+                requested_command(int(command_list[1]))
+            except KeyError:
+                print(f"Attempted the following command: {command_list}")
+        else:
+            print(f"Unrecognized inputs: {command_list}")
+
+        # Get remaining battery percentage after each command has been sent
+        self.query_battery()
+
     def diag(self):
         """
         Method to print out the current state of various Boolean values
@@ -440,6 +525,7 @@ class VideoStreamTello(object):
         print(f"main_loop: {self.main_loop}")
         print(f"save: {self.save}")
         print(f"run_inference: {self.run_inference}")
+        print(f"auto_control: {self.auto_control}")
 
     def auto_control_tello(self):
         """
@@ -448,7 +534,7 @@ class VideoStreamTello(object):
         """
         # If the probability of being blocked or unblocked is greater than
         # the threshold, then the drone will move forward
-        if self.blocked_or_unblocked < self.threshold:  # Blocked
+        if self.blocked_or_unblocked < self.inference_threshold:  # Blocked
             """
             If the drone is blocked, then it will randomly turn left or right until it is unblocked.
 
@@ -456,23 +542,27 @@ class VideoStreamTello(object):
             then the drone will move left. If the number is greater than self.random_threshold, then the drone will
             move right.
             """
+            print(f"Detecting blocked with: {self.blocked_or_unblocked}")
+
             random_number = random.random()
             if random_number < self.random_threshold:  # Turn left
+                print(f"\tTurning left...")
                 self.tello.send_rc_control(
-                    left_right_velocity=self.turn_speed,
+                    left_right_velocity=0,
                     forward_backward_velocity=0,
                     up_down_velocity=0,
-                    yaw_velocity=0,
+                    yaw_velocity=-self.turn_speed,
                 )
-                # time.sleep(1)
+                time.sleep(self.turn_wait)
             else:  # Turn right
+                print(f"\tTurning right...")
                 self.tello.send_rc_control(
-                    left_right_velocity=-self.turn_speed,
+                    left_right_velocity=0,
                     forward_backward_velocity=0,
                     up_down_velocity=0,
-                    yaw_velocity=0,
+                    yaw_velocity=self.turn_speed,
                 )
-                # time.sleep(1)
+                time.sleep(self.turn_wait)
 
         else:  # Unblocked
             # If the probability of being blocked or unblocked is less than the threshold, then the drone will move
@@ -515,13 +605,19 @@ class VideoStreamTello(object):
         if self.save:
             self.save = False
 
+        """
         print(f"killing collect data state...")
         if self.run_inference:
             self.run_inference = False
+        """
 
         print(f"killing inference state...")
         if self.run_inference:
             self.run_inference = False
+
+        print(f"killing auto control state...")
+        if self.auto_control:
+            self.auto_control = False
 
     @staticmethod
     def _inline_print(string, verbose=True):
