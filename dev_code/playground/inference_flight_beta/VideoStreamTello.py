@@ -8,6 +8,7 @@ import os
 import torch
 from torchvision import transforms
 from PIL import Image
+import random
 
 # Import custom modules
 import config
@@ -62,6 +63,7 @@ class VideoStreamTello(object):
             "l": self.initiate_land,
             "t": self.initiate_takeoff,
             "diag": self.diag,
+            "auto_nav": self.auto_nav,
         }
 
         # Create a command dictionary where we expect a single keyword AND a
@@ -117,8 +119,19 @@ class VideoStreamTello(object):
         )
 
         self.save = save_images  # Boolean flag to determine whether to save images from the camera feed
-        self.run_inference = run_inference  # Boolean flag to determine whether to run inference on the camera feed
-        self.blocked_or_unblocked = 5.5555  # Default to a 'weird' value (so we can tell if it has been updated)  # This is the value that will be updated by the inference model (0 = blocked, 1 = unblocked)
+        # self.run_inference = run_inference  # Boolean flag to determine whether to run inference on the camera feed
+        self.run_inference = False
+
+        # This is the value that will be updated by the inference model
+        # (0 = blocked, 1 = unblocked)
+        self.blocked_or_unblocked = (
+            5.5555  # Default to a 'weird' value (so we can tell if it has been updated)
+        )
+
+        self.threshold = 0.5  # Threshold for determining whether the inference model predicts blocked or unblocked
+        self.random_threshold = 0.5
+        self.forward_speed = 10
+        self.turn_speed = 10
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
@@ -158,47 +171,68 @@ class VideoStreamTello(object):
         self.inference_t = Thread(target=self.run_through_inference, args=())
         self.inference_t.start()
 
+    def auto_nav(self):
+        """
+        Method to initiate the auto navigation / control sequence (i.e. run inference, and move the tello based on the
+        inference output)
+        """
+
+        # If the tello is on the ground, takeoff
+        if self.landed:
+            self.initiate_takeoff()
+
+        # Change the Boolean flag to run inference to True (read by the inference thread)
+        self.run_inference = True
+
     def run_through_inference(self):
         """
         Method to collect the most recently saved image from the camera feed, and feed it to the inference model
         """
         while self.run_inference:
-            # Resize the image to the dimensions expected by the inference model
-            image_width, image_height = self.resize_image_dimensions(
-                image_width=config.IMAGE_WIDTH,
-                image_height=config.IMAGE_HEIGHT,
-                size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
-            )
+            try:
+                # Resize the image to the dimensions expected by the inference model
+                image_width, image_height = self.resize_image_dimensions(
+                    image_width=config.IMAGE_WIDTH,
+                    image_height=config.IMAGE_HEIGHT,
+                    size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
+                )
 
-            # Create the resize transform (passing in 'antialias' parameter to suppress warning)
-            resize_transform = transforms.Resize(
-                (image_width, image_height), antialias=True
-            )
+                # Create the resize transform (passing in 'antialias' parameter to suppress warning)
+                resize_transform = transforms.Resize(
+                    (image_width, image_height), antialias=True
+                )
 
-            # Store the most recent image from the camera feed
-            inference_image = self.most_recent_image
+                # Store the most recent image from the camera feed
+                inference_image = self.most_recent_image
 
-            # Convert the image to a PIL image
-            inference_image = Image.fromarray(inference_image)
+                # Convert the image to a PIL image
+                inference_image = Image.fromarray(inference_image)
 
-            # Convert the image to a tensor
-            inference_image = transforms.ToTensor()(inference_image)
+                # Convert the image to a tensor
+                inference_image = transforms.ToTensor()(inference_image)
 
-            # Add a batch dimension to the image (Model expects 4D input - originally a 3D input)
-            inference_image = inference_image.unsqueeze(0)
+                # Add a batch dimension to the image (Model expects 4D input - originally a 3D input)
+                inference_image = inference_image.unsqueeze(0)
 
-            # Apply the transform to the image prior to feeding it to the inference model
-            resized_image = resize_transform(inference_image)
+                # Apply the transform to the image prior to feeding it to the inference model
+                resized_image = resize_transform(inference_image)
 
-            # Feed the image to the inference model
-            blocked_or_unblocked = self.inference_model(resized_image)
-            blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
+                # Feed the image to the inference model
+                blocked_or_unblocked = self.inference_model(resized_image)
+                blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
 
-            # Update the blocked_or_unblocked attribute
-            self.blocked_or_unblocked = blocked_or_unblocked
+                # Update the blocked_or_unblocked attribute
+                self.blocked_or_unblocked = blocked_or_unblocked
 
-            # Wait for a bit before trying again
-            time.sleep(self.image_refresh_rate)
+                # Pass in the blocked_or_unblocked value to the Tello control method
+                self.auto_control_tello()
+
+                # Wait for a bit before trying again
+                time.sleep(self.image_refresh_rate)
+
+            except KeyboardInterrupt:
+                self.run_inference = False
+                break
 
     @staticmethod
     def resize_image_dimensions(
@@ -407,6 +441,49 @@ class VideoStreamTello(object):
         print(f"save: {self.save}")
         print(f"run_inference: {self.run_inference}")
 
+    def auto_control_tello(self):
+        """
+        Method to automatically navigate the drone based on the blocked_or_unblocked
+        probability
+        """
+        # If the probability of being blocked or unblocked is greater than
+        # the threshold, then the drone will move forward
+        if self.blocked_or_unblocked < self.threshold:  # Blocked
+            """
+            If the drone is blocked, then it will randomly turn left or right until it is unblocked.
+
+            Establish a random number between 0 and 1. If the number is less than self.threshold (default: 0.5), then
+            the drone will move left. If the number is greater than 0.5, then the drone will move right.
+            """
+            random_number = random.random()
+            if random_number < self.random_threshold:  # Turn left
+                self.tello.send_rc_control(
+                    left_right_velocity=self.turn_speed,
+                    forward_backward_velocity=0,
+                    up_down_velocity=0,
+                    yaw_velocity=0,
+                )
+                # time.sleep(1)
+            else:  # Turn right
+                self.tello.send_rc_control(
+                    left_right_velocity=-self.turn_speed,
+                    forward_backward_velocity=0,
+                    up_down_velocity=0,
+                    yaw_velocity=0,
+                )
+                # time.sleep(1)
+
+        else:  # Unblocked
+            # If the probability of being blocked or unblocked is less than the threshold, then the drone will move
+            # forward until it is blocked
+            self.tello.send_rc_control(
+                left_right_velocity=0,
+                forward_backward_velocity=self.forward_speed,
+                up_down_velocity=0,
+                yaw_velocity=0,
+            )
+            # time.sleep(1)
+
     def kill_sequence(self):
         """
         Method to completely stop all Tello operations other than the connection
@@ -438,6 +515,10 @@ class VideoStreamTello(object):
             self.save = False
 
         print(f"killing collect data state...")
+        if self.run_inference:
+            self.run_inference = False
+
+        print(f"killing inference state...")
         if self.run_inference:
             self.run_inference = False
 
