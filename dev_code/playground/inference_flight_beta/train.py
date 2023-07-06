@@ -6,6 +6,7 @@ parameters are defined in config.py.
 
 Note that this script is HEAVILY reliant on parameters found in config.py
 """
+import os.path
 
 # Import Python-native modules
 import torch
@@ -111,14 +112,30 @@ if __name__ == "__main__":
             f"---- Testing run duration for model '{config.TORCH_MODEL_FILENAME_EXT}': {end_time - start_time}"
         )
 
-        # Save model
+        ###########################
+        # Save model as .pt file
+        ###########################
+
+        # Check to make sure that config.TORCH_MODEL_DIRECTORY exists, otherwise create it
+        # if not config.TORCH_MODEL_DIRECTORY.exists():
+        if os.path.exists(config.TORCH_MODEL_DIRECTORY) is False:
+            print(f">>>> Creating directory: {config.TORCH_MODEL_DIRECTORY}")
+            # config.TORCH_MODEL_DIRECTORY.mkdir()
+            os.makedirs(config.TORCH_MODEL_DIRECTORY)
+        else:
+            print(f">>>> Model directory: {config.TORCH_MODEL_DIRECTORY}")
+
+        # Get the test accuracy (to be used in the filename)
         test_acc = test_results[0]["test_acc"]
+
+        # Save the model
         torch_model_filename = (
-            config.TORCH_MODEL_FILENAME
+            config.TORCH_MODEL_DIRECTORY
+            + config.TORCH_MODEL_FILENAME
             + f"_acc_{test_acc:.4f}"
             + config.TORCH_MODEL_FILENAME_EXT
         )
-        print(f">>>> Saving model as {torch_model_filename}")
+        print(f">>>> Saving model to {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)
 
     if config.TEST_BEST_MODEL_CKPT:

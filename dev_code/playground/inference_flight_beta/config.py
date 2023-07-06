@@ -29,6 +29,9 @@ RAW_DATA_DIR = "raw_data"  # Directory storing the collected data from the drone
 SORTED_DATA_DIR = "sorted_data"  # Directory to store the sorted data
 
 # Logging/Saving parameters
+TORCH_MODEL_DIRECTORY = (
+    "torch_models/"  # Directory to store the PyTorch models after training
+)
 TORCH_MODEL_FILENAME = "drone_obstacle_cnn"  # Desired template filename for saving PyTorch models after training
 TORCH_MODEL_FILENAME_EXT = (
     ".pt"  # Desired file extension for saving PyTorch models after training
