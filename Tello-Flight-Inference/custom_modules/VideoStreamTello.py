@@ -23,6 +23,7 @@ class VideoStreamTello(object):
         auto_control=True,
         run_inference=True,
         save_images=True,
+        load_model=True,
         inference_model_filepath=config.INFERENCE_MODEL_FILENAME,
     ):
         # Ensure that a valid model filepath is provided
@@ -38,16 +39,17 @@ class VideoStreamTello(object):
             size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
         )
 
-        # Load our inference model
-        self.inference_model = CNN_lightning(
-            num_dummy_images=config.NUM_DUMMY_IMAGES,
-            num_channels=config.NUM_CHANNELS,
-            image_width=image_width,
-            image_height=image_height,
-        )
-        print(f"Load model: {inference_model_filepath}")
-        self.inference_model.load_state_dict(torch.load(inference_model_filepath))
-        self.inference_model.eval()
+        if load_model:
+            # Load our inference model
+            self.inference_model = CNN_lightning(
+                num_dummy_images=config.NUM_DUMMY_IMAGES,
+                num_channels=config.NUM_CHANNELS,
+                image_width=image_width,
+                image_height=image_height,
+            )
+            print(f"Load model: {inference_model_filepath}")
+            self.inference_model.load_state_dict(torch.load(inference_model_filepath))
+            self.inference_model.eval()
 
         # Establish Tello() object
         self.tello = Tello()

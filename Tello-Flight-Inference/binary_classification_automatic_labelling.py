@@ -12,11 +12,15 @@ A progress bar is used to show the progress of our image classification.
 
 # Import Python-native modules
 import os
+import sys
 import shutil
 from torchvision import transforms
 from PIL import Image
 import torch
 from tqdm import tqdm
+
+# Add the custom modules directory to the system path
+sys.path.append(os.path.join(os.getcwd(), "custom_modules"))
 
 # Import custom modules
 from CNN_lightning import CNN_lightning
@@ -173,7 +177,7 @@ def organize_images_with_progress(
 
 if __name__ == "__main__":
     # Set variables
-    model_path = config.TORCH_MODEL_FILENAME_LOAD
+    model_path = config.GOLDEN_MODEL
     source_dir = config.RAW_DATA_DIR
     destination_dir = config.SORTED_DATA_DIR
     split_ratio = (

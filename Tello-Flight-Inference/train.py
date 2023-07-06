@@ -9,11 +9,16 @@ Note that this script is HEAVILY reliant on parameters found in config.py
 import os.path
 
 # Import Python-native modules
+import sys
+import os
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from datetime import datetime
 import warnings
+
+# Add the custom modules directory to the system path
+sys.path.append(os.path.join(os.getcwd(), "custom_modules"))
 
 # Import custom modules
 from ImageDataModule import ImageDataModule
@@ -130,10 +135,10 @@ if __name__ == "__main__":
 
         # Save the model
         torch_model_filename = (
-            config.TORCH_MODEL_DIRECTORY
-            + config.TORCH_MODEL_FILENAME
-            + f"_acc_{test_acc:.4f}"
-            + config.TORCH_MODEL_FILENAME_EXT
+                config.TORCH_MODEL_DIRECTORY
+                + config.TORCH_MODEL_FILENAME
+                + f"_acc_{test_acc:.4f}"
+                + config.TORCH_MODEL_FILENAME_EXT
         )
         print(f">>>> Saving model to {torch_model_filename}")
         torch.save(model.state_dict(), torch_model_filename)

@@ -3,8 +3,13 @@ This Python script aims to load and utilize an inference model to classify image
 """
 
 # Import python-native modules
+import sys
+import os
 import time
 import queue
+
+# Add the custom modules directory to the system path
+sys.path.append(os.path.join(os.getcwd(), "custom_modules"))
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello

@@ -6,7 +6,12 @@ camera feed is being saved. This will allow for more distinct control while obta
 """
 
 # Import python-native modules
+import sys
+import os
 import time
+
+# Add the custom modules directory to the system path
+sys.path.append(os.path.join(os.getcwd(), "custom_modules"))
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello
@@ -20,7 +25,7 @@ if __name__ == "__main__":
 
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
-    tello_video_stream = VideoStreamTello(save_images=True)
+    tello_video_stream = VideoStreamTello(save_images=True, load_model=False, run_inference=False, auto_control=False)
     ########################################################################
 
     # Enter our main execution loop (can only be exited via a user input
