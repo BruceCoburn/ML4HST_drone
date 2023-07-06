@@ -98,15 +98,14 @@ def organize_images_with_progress(
             f"Destination directory does not exist: '{destination_dir}', creating directory..."
         )
 
-    # Create destination directories
+    # Create destination directories where each class is a subdirectory of the Test, Train, and Val parent-directories
     os.makedirs(destination_dir, exist_ok=True)
-    for idx, class_name in enumerate(classes):
-        print(f"---- CLASS {idx}: {class_name}")
-        class_dir = os.path.join(destination_dir, class_name)
-        os.makedirs(class_dir, exist_ok=True)
-        for split in ["Train", "Test", "Val"]:
-            split_dir = os.path.join(class_dir, split)
-            os.makedirs(split_dir, exist_ok=True)
+    for split in ["Train", "Test", "Val"]:
+        split_dir = os.path.join(destination_dir, split)
+        os.makedirs(split_dir, exist_ok=True)
+        for idx, class_name in enumerate(classes):
+            class_dir = os.path.join(split_dir, class_name)
+            os.makedirs(class_dir, exist_ok=True)
 
     # Get a list of image files to process
     image_files = []
@@ -138,7 +137,7 @@ def organize_images_with_progress(
 
         # Copy the image to the corresponding class and split directory
         destination_class_dir = os.path.join(
-            destination_dir, classes[class_index], split_name
+            destination_dir, split_name, classes[class_index]
         )
         os.makedirs(destination_class_dir, exist_ok=True)
         shutil.copy(image_path, destination_class_dir)

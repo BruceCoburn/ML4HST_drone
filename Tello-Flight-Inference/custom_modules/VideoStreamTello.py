@@ -24,7 +24,7 @@ class VideoStreamTello(object):
         run_inference=True,
         save_images=True,
         load_model=True,
-        inference_model_filepath=config.INFERENCE_MODEL_FILENAME,
+        inference_model_filepath=config.TORCH_MODEL_DIRECTORY + config.INFERENCE_MODEL_FILENAME,
     ):
         # Ensure that a valid model filepath is provided
         if inference_model_filepath is None:
@@ -615,12 +615,6 @@ class VideoStreamTello(object):
         print(f"killing save state...")
         if self.save:
             self.save = False
-
-        """
-        print(f"killing collect data state...")
-        if self.run_inference:
-            self.run_inference = False
-        """
 
         print(f"killing inference state...")
         if self.run_inference:

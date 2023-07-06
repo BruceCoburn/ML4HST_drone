@@ -24,9 +24,9 @@ directory_path = sys.argv[1]
 
 directory_path = os.path.abspath(directory_path)
 
-if sys.platform.startswith('win'):
+if sys.platform.startswith("win"):
     directory_path = os.path.normpath(directory_path)
-    print(f'Windows directory path: {directory_path}')
+    print(f"Windows directory path: {directory_path}")
 
 # Validate if the provided path is a directory
 if not os.path.isdir(directory_path):
@@ -37,9 +37,9 @@ if not os.path.isdir(directory_path):
 for root, dirs, files in os.walk(directory_path):
     for file in files:
         # Check if the file is a Python file
-        if file.endswith('.py'):
+        if file.endswith(".py"):
             file_path = os.path.join(root, file)
             print(f"Formatting file: {file_path}")
 
             # Run autopep8 on the file
-            subprocess.run(['autopep8', '--in-place', '--aggressive', file_path])
+            subprocess.run(["autopep8", "--in-place", "--aggressive", file_path])

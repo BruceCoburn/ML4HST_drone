@@ -18,10 +18,12 @@ class VideoStreamTello(object):
         self.img = None
 
         # Establish object attributes
-        self.unit_dp = unit_dp          # Length of spatial displacement
+        self.unit_dp = unit_dp  # Length of spatial displacement
         self.window_name = window_name  # Name of the video stream popup window
-        self.landed = True              # Boolean flag to determine whether the tello is on the ground
-        self.stream = True              # Boolean flag to determine whether the tello should be streaming or not
+        self.landed = (
+            True  # Boolean flag to determine whether the tello is on the ground
+        )
+        self.stream = True  # Boolean flag to determine whether the tello should be streaming or not
         self.popup = True
         self.main_loop = True
 
@@ -29,13 +31,13 @@ class VideoStreamTello(object):
         """
         Method to query and print the current battery percentage of the tello
         """
-        print(f'Battery Life: {self.tello.query_battery()}%')
+        print(f"Battery Life: {self.tello.query_battery()}%")
 
     def update_frame(self, img_queue, stream_flag):
         """
         Method to update the live video feed from the tello (process-based)
         """
-        camera = cv2.VideoCapture('udp://@0.0.0.0:11111')
+        camera = cv2.VideoCapture("udp://@0.0.0.0:11111")
 
         while stream_flag.value:
             ret, frame = camera.read()
@@ -53,42 +55,42 @@ class VideoStreamTello(object):
             if not command_queue.empty():
                 command = command_queue.get()
 
-                if command == 'kill':
+                if command == "kill":
                     self.kill_sequence()
-                elif command == 'w':
+                elif command == "w":
                     self.tello.move_forward(self.unit_dp)
-                elif command == 's':
+                elif command == "s":
                     self.tello.move_back(self.unit_dp)
-                elif command == 'a':
+                elif command == "a":
                     self.tello.move_left(self.unit_dp)
-                elif command == 'd':
+                elif command == "d":
                     self.tello.move_right(self.unit_dp)
-                elif command == 'e':
+                elif command == "e":
                     self.tello.rotate_clockwise(self.unit_dp)
-                elif command == 'q':
+                elif command == "q":
                     self.tello.rotate_counter_clockwise(self.unit_dp)
-                elif command == 'r':
+                elif command == "r":
                     self.tello.move_up(self.unit_dp)
-                elif command == 'f':
+                elif command == "f":
                     self.tello.move_down(self.unit_dp)
-                elif command == 'l':
+                elif command == "l":
                     self.tello.land()
                     self.landed = True
-                elif command == 't' and self.landed:
+                elif command == "t" and self.landed:
                     self.tello.takeoff()
                     self.landed = False
-                elif command == 'diag':
+                elif command == "diag":
                     self.diag()
                 else:
-                    print(f'command: {command}')
+                    print(f"command: {command}")
 
     def diag(self):
-        print(f'stream: {self.stream}')
-        print(f'landed: {self.landed}')
-        print(f'main_loop: {self.main_loop}')
+        print(f"stream: {self.stream}")
+        print(f"landed: {self.landed}")
+        print(f"main_loop: {self.main_loop}")
 
     def kill_sequence(self):
-        print(f'killing...')
+        print(f"killing...")
 
         if self.main_loop:
             self.main_loop = False
@@ -108,15 +110,19 @@ class VideoStreamTello(object):
 if __name__ == "__main__":
     manager = Manager()
     command_queue = manager.Queue()
-    main_loop_flag = manager.Value('b', True)
+    main_loop_flag = manager.Value("b", True)
     img_queue = manager.Queue()
 
     tello_video_stream = VideoStreamTello()
 
-    video_process = Process(target=tello_video_stream.update_frame, args=(img_queue, main_loop_flag))
+    video_process = Process(
+        target=tello_video_stream.update_frame, args=(img_queue, main_loop_flag)
+    )
     video_process.start()
 
-    command_process = Process(target=tello_video_stream.process_commands, args=(command_queue, main_loop_flag))
+    command_process = Process(
+        target=tello_video_stream.process_commands, args=(command_queue, main_loop_flag)
+    )
     command_process.start()
 
     while tello_video_stream.main_loop:
@@ -129,10 +135,10 @@ if __name__ == "__main__":
             command = input("Enter input: ")
             command_queue.put(command)
         except KeyboardInterrupt:
-            print(f'!!!Interrupted!!!')
+            print(f"!!!Interrupted!!!")
             main_loop_flag.value = False
             command_process.join()
             video_process.join()
             break
 
-    print(f'done with main loop...')
+    print(f"done with main loop...")
