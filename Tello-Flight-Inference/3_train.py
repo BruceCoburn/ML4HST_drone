@@ -6,7 +6,6 @@ parameters are defined in config.py.
 
 Note that this script is HEAVILY reliant on parameters found in config.py
 """
-import os.path
 
 # Import Python-native modules
 import os
