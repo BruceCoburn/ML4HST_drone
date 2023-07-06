@@ -24,7 +24,8 @@ class VideoStreamTello(object):
         run_inference=True,
         save_images=True,
         load_model=True,
-        inference_model_filepath=config.TORCH_MODEL_DIRECTORY + config.INFERENCE_MODEL_FILENAME,
+        inference_model_filepath=config.TORCH_MODEL_DIRECTORY
+        + config.INFERENCE_MODEL_FILENAME,
     ):
         # Ensure that a valid model filepath is provided
         if inference_model_filepath is None:
@@ -396,8 +397,6 @@ class VideoStreamTello(object):
             except KeyboardInterrupt:
                 break
 
-        self.time_to_save_imgs_end = time.time() - self.time_to_save_imgs_start
-
     @staticmethod
     def nice_print(string):
         """
@@ -616,6 +615,13 @@ class VideoStreamTello(object):
         if self.save:
             self.save = False
 
+            self.time_to_save_imgs_end = time.time() - self.time_to_save_imgs_start
+
+            # Display the number of images written
+            self.nice_print(
+                f"Wrote {self.num_images_written} images in {self.time_to_save_imgs_end} seconds"
+            )
+
         print(f"killing inference state...")
         if self.run_inference:
             self.run_inference = False
@@ -623,6 +629,15 @@ class VideoStreamTello(object):
         print(f"killing auto control state...")
         if self.auto_control:
             self.auto_control = False
+
+        # Join our running threads
+        print(f"Joining threads...")
+        self.video_stream_t.join()
+        self.image_save_t.join()
+        self.inference_t.join()
+
+        print(f"Turning off stream...")
+        self.tello.streamoff()
 
     @staticmethod
     def _inline_print(string, verbose=True):

@@ -11,7 +11,6 @@ import time
 # Import custom modules
 from custom_modules.VideoStreamTello import VideoStreamTello
 from custom_modules.supplemental_functions import nice_print
-from custom_modules import config
 
 # Main script execution
 if __name__ == "__main__":
@@ -21,7 +20,10 @@ if __name__ == "__main__":
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
     tello_video_stream = VideoStreamTello(
-        save_images=True, load_model=False, run_inference=False, auto_control=False
+        save_images=True,
+        load_model=False,
+        run_inference=False,
+        auto_control=False,
     )
     ########################################################################
 
@@ -38,17 +40,6 @@ if __name__ == "__main__":
 
             # Initiate the kill sequence
             tello_video_stream.kill_sequence()
-
-            # Join our running threads
-            tello_video_stream.video_stream_t.join()
-            tello_video_stream.image_save_t.join()
-            tello_video_stream.inference_t.join()
-
-    if config.SAVE_IMAGES:
-        # Print our 'saving images' information
-        nice_print(
-            f"Wrote {tello_video_stream.num_images_written} images in {tello_video_stream.time_to_save_imgs_start} seconds"
-        )
 
     # Calculate how long our script takes to run
     end_time = time.time() - start_time

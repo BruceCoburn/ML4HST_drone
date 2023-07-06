@@ -26,7 +26,8 @@ if __name__ == "__main__":
         save_images=config.SAVE_IMAGES,
         auto_control=config.AUTO_CONTROL,
         run_inference=config.RUN_INFERENCE,
-        inference_model_filepath=config.TORCH_MODEL_DIRECTORY + config.INFERENCE_MODEL_FILENAME
+        inference_model_filepath=config.TORCH_MODEL_DIRECTORY
+        + config.INFERENCE_MODEL_FILENAME,
     )
     ########################################################################
 
