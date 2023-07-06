@@ -429,17 +429,19 @@ class VideoStreamTello(object):
                 self.most_recent_image = self.img
                 self.window_name = "Drone Camera"
 
-                # Display the blocked/unblocked probability to the popup window
-                text = "p(blocked_or_unblocked):" + str(self.blocked_or_unblocked)
-                cv2.putText(
-                    self.img,
-                    text,
-                    (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 0, 255),
-                    2,
-                )
+                # Display the blocked/unblocked probability to the popup window (only if inference is running)
+                # Otherwise the blocked/unblocked probability will be displayed/saved during image collection
+                if self.run_inference:
+                    text = "p(blocked_or_unblocked):" + str(self.blocked_or_unblocked)
+                    cv2.putText(
+                        self.img,
+                        text,
+                        (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1,
+                        (0, 0, 255),
+                        2,
+                    )
 
                 # Display the image in a popup window
                 cv2.imshow(self.window_name, self.img)
