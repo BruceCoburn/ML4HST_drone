@@ -29,6 +29,9 @@ RAW_DATA_DIR = "raw_data"  # Directory storing the collected data from the drone
 SORTED_DATA_DIR = "sorted_data"  # Directory to store the sorted data
 
 # Logging/Saving parameters
+TORCH_MODEL_DIRECTORY = (
+    "torch_models/"  # Directory to store the PyTorch models after training
+)
 TORCH_MODEL_FILENAME = "drone_obstacle_cnn"  # Desired template filename for saving PyTorch models after training
 TORCH_MODEL_FILENAME_EXT = (
     ".pt"  # Desired file extension for saving PyTorch models after training
@@ -47,6 +50,10 @@ TEST_BEST_MODEL_CKPT = (
 LOAD_AND_TEST = False  # Set to True if you want to load a model and test it
 LOG_EVERY_N_STEPS = 1  # Set to 1 if you want to log every step during training
 SAVE_IMAGES = False  # Set to True if you want to save images during training
+AUTO_CONTROL = (
+    False  # Set to True if you want to automatically control the drone on startup
+)
+RUN_INFERENCE = True  # Set to True if you want to start out running inference using the drone camera feed
 
 # Parameters related to dataset "re-scrambling"
 DATASET_FILE_EXT = ".jpg"  # File extension of the images in the dataset

@@ -4,11 +4,14 @@ This Python script aims to load and utilize an inference model to classify image
 
 # Import python-native modules
 import time
+import queue
 
 # Import custom modules
 from VideoStreamTello import VideoStreamTello
 import config
 from supplemental_functions import nice_print
+from CommandPopup import CommandPopup
+from command_dict import command_dict
 
 
 # Main script execution
@@ -18,16 +21,34 @@ if __name__ == "__main__":
 
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
-    # Ensure the config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
-    tello_video_stream = VideoStreamTello(save_images=config.SAVE_IMAGES)
+    # Ensure that config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
+    # Ensure that config.AUTO_CONTROL is set your preference (True/False) PRIOR to running this script
+    tello_video_stream = VideoStreamTello(
+        save_images=config.SAVE_IMAGES,
+        auto_control=config.AUTO_CONTROL,
+        run_inference=config.RUN_INFERENCE,
+    )
     ########################################################################
+
+    # Create a queue to hold commands from the command popup (to handoff to the VideoStreamTello object)
+    command_queue = queue.Queue()
+    command_popup = CommandPopup(command_queue=command_queue, command_dict=command_dict)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)
     while tello_video_stream.main_loop:
+        # Update our command popup window
+        command_popup.window.update()
+
         try:
-            tello_video_stream.poll_keystrokes()
+            # Poll our command queue for new commands
+            command = command_queue.get_nowait()
+            tello_video_stream.get_button_command(command)
+        except queue.Empty:
+            # If there are no commands, pass
+            pass
         except KeyboardInterrupt:
+            # If we receive a KeyboardInterrupt, print a message, initiate the kill sequence, and join our threads
             print(f"!!!Interrupted!!!")
 
             # Stop our main loop
@@ -41,6 +62,9 @@ if __name__ == "__main__":
             tello_video_stream.image_save_t.join()
             tello_video_stream.inference_t.join()
 
+    # Destroy command popup window
+    command_popup.window.destroy()
+
     if config.SAVE_IMAGES:
         # Print our 'saving images' information
         nice_print(
@@ -51,4 +75,4 @@ if __name__ == "__main__":
     end_time = time.time() - start_time
 
     # Print our ending information
-    nice_print(f"done with main loop in {end_time} seconds...")
+    nice_print(f"Ran Tello code for {end_time} seconds...")
