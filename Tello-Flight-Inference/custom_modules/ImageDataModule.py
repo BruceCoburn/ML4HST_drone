@@ -9,7 +9,7 @@ import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
 # Import custom modules
-import config
+from . import config
 
 
 class ImageDataModule(pl.LightningDataModule):

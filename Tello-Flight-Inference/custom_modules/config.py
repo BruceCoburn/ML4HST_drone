@@ -24,7 +24,7 @@ NUM_WORKERS = (
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
 
-# Data sorting parameters (with usage of binary_classification_automatic_labelling.py)
+# Data sorting parameters (with usage of 2_binary_classification_automatic_labelling.py)
 RAW_DATA_DIR = "raw_data"  # Directory storing the collected data from the drone
 SORTED_DATA_DIR = "sorted_data"  # Directory to store the sorted data
 
@@ -39,7 +39,7 @@ TORCH_MODEL_FILENAME_EXT = (
 TORCH_MODEL_FILENAME_LOAD = (
     "drone_obstacle_cnn_acc_0.8571.pt"  # Desired filename of PyTorch model to load
 )
-GOLDEN_MODEL = "drone_obstacle_cnn_acc_0.8571.pt"
+GOLDEN_MODEL_FILEPATH = "golden_model/drone_obstacle_cnn_acc_0.8571.pt"
 INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.8571.pt"  # Desired filename of PyTorch model to load for inference
 CHECKPOINT_DIR = (
     "checkpoints"  # Directory to store the model checkpoints during training

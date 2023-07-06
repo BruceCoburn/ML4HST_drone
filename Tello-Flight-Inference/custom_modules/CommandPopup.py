@@ -6,7 +6,7 @@ This Python script houses the object which will be used to create a popup window
 import tkinter as tk
 
 # Import custom modules
-from supplemental_functions import nice_print
+from .supplemental_functions import nice_print
 
 
 class CommandPopup(object):

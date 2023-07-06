@@ -24,7 +24,7 @@ NUM_WORKERS = (
 # Dataset location
 DATA_DIR = "DRONE_OBSTACLES"
 
-# Data sorting parameters (with usage of binary_classification_automatic_labelling.py)
+# Data sorting parameters (with usage of 2_binary_classification_automatic_labelling.py)
 RAW_DATA_DIR = "raw_data"  # Directory storing the collected data from the drone
 SORTED_DATA_DIR = "sorted_data"  # Directory to store the sorted data
 

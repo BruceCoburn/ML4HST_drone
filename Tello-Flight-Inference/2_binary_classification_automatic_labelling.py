@@ -173,7 +173,7 @@ def organize_images_with_progress(
 
 if __name__ == "__main__":
     # Set variables
-    model_path = config.GOLDEN_MODEL
+    model_path = config.GOLDEN_MODEL_FILEPATH
     source_dir = config.RAW_DATA_DIR
     destination_dir = config.SORTED_DATA_DIR
     split_ratio = (
