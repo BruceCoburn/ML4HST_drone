@@ -11,8 +11,8 @@ from PIL import Image
 import random
 
 # Import custom modules
-import config
-from CNN_lightning import CNN_lightning
+from . import config
+from .CNN_lightning import CNN_lightning
 
 
 class VideoStreamTello(object):

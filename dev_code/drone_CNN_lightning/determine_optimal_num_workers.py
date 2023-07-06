@@ -1,7 +1,7 @@
 """
 This script determines the optimal num_workers value for the DataLoader class in PyTorch.
 
-Run this script prior to running the train.py script to determine the optimal num_workers value for your system. Then,
+Run this script prior to running the 3_train.py script to determine the optimal num_workers value for your system. Then,
 set the NUM_WORKERS variable in config.py to the optimal value.
 """
 

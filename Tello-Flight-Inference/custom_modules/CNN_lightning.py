@@ -10,7 +10,7 @@ import torch.optim as optim
 import pytorch_lightning as pl
 
 # Import custom modules
-import config
+from . import config
 
 
 class CNN_lightning(pl.LightningModule):
