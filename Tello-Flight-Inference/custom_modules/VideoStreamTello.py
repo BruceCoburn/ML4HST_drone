@@ -616,12 +616,6 @@ class VideoStreamTello(object):
         if self.save:
             self.save = False
 
-        """
-        print(f"killing collect data state...")
-        if self.run_inference:
-            self.run_inference = False
-        """
-
         print(f"killing inference state...")
         if self.run_inference:
             self.run_inference = False

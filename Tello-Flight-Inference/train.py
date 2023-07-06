@@ -118,10 +118,8 @@ if __name__ == "__main__":
         ###########################
 
         # Check to make sure that config.TORCH_MODEL_DIRECTORY exists, otherwise create it
-        # if not config.TORCH_MODEL_DIRECTORY.exists():
         if os.path.exists(config.TORCH_MODEL_DIRECTORY) is False:
             print(f">>>> Creating directory: {config.TORCH_MODEL_DIRECTORY}")
-            # config.TORCH_MODEL_DIRECTORY.mkdir()
             os.makedirs(config.TORCH_MODEL_DIRECTORY)
         else:
             print(f">>>> Model directory: {config.TORCH_MODEL_DIRECTORY}")
