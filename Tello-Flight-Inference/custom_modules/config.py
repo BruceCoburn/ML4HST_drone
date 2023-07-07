@@ -46,7 +46,7 @@ CHECKPOINT_DIR = (
 )
 TEST_AND_SAVE_MODEL_PT = True  # Set to True if you want to test the model after training and save the model.pt file
 TEST_BEST_MODEL_CKPT = (
-    True  # Set to True if you want to test the best model checkpoint after training
+    False  # Set to True if you want to test the best model checkpoint after training
 )
 LOAD_AND_TEST = False  # Set to True if you want to load a model and test it
 LOG_EVERY_N_STEPS = 1  # Set to 1 if you want to log every step during training
