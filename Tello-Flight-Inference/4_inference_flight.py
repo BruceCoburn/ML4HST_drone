@@ -18,6 +18,13 @@ if __name__ == "__main__":
     # Start timing how long this script takes to run
     start_time = time.time()
 
+    ####################################################################
+    # Change the following variable to the filename of the .pt file
+    # that you wish to use
+    INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.8571.pt"
+    ####################################################################
+
+
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
     # Ensure that config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
@@ -27,7 +34,7 @@ if __name__ == "__main__":
         auto_control=config.AUTO_CONTROL,
         run_inference=config.RUN_INFERENCE,
         inference_model_filepath=config.TORCH_MODEL_DIRECTORY
-        + config.INFERENCE_MODEL_FILENAME,
+        + INFERENCE_MODEL_FILENAME,
     )
     ########################################################################
 
