@@ -639,8 +639,8 @@ class VideoStreamTello(object):
         print(f"---- Turning off stream...")
         self.tello.streamoff()
 
-        print(f"---- Closing connection...")
-        self.tello.end()
+        # print(f"---- Closing connection...")
+        # self.tello.end()
 
     @staticmethod
     def _inline_print(string, verbose=True):
