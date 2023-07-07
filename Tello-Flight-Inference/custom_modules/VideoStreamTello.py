@@ -590,28 +590,28 @@ class VideoStreamTello(object):
         Method to completely stop all Tello operations other than the connection
         """
 
-        print(f"killing main loop...")
+        print(f"---- killing main loop...")
         if self.main_loop:
             self.main_loop = False
 
-        print(f"killing stream...")
+        print(f"---- killing stream...")
         if self.stream:
             self.tello.streamoff()
             self.stream = False
 
-        print(f"killing landing...")
+        print(f"---- killing landing...")
         if not self.landed:
             self.tello.land()
             self.landed = True
 
-        print(f"killing popups...")
+        print(f"---- killing popups...")
         if self.popup:
             cv2.waitKey(1)
             cv2.destroyAllWindows()
             cv2.waitKey(1)
             self.popup = False
 
-        print(f"killing save state...")
+        print(f"---- killing save state...")
         if self.save:
             self.save = False
 
@@ -622,22 +622,25 @@ class VideoStreamTello(object):
                 f"Wrote {self.num_images_written} images in {self.time_to_save_imgs_end} seconds"
             )
 
-        print(f"killing inference state...")
+        print(f"---- killing inference state...")
         if self.run_inference:
             self.run_inference = False
 
-        print(f"killing auto control state...")
+        print(f"---- killing auto control state...")
         if self.auto_control:
             self.auto_control = False
 
         # Join our running threads
-        print(f"Joining threads...")
+        print(f"---- Joining threads...")
         self.video_stream_t.join()
         self.image_save_t.join()
         self.inference_t.join()
 
-        print(f"Turning off stream...")
+        print(f"---- Turning off stream...")
         self.tello.streamoff()
+
+        print(f"---- Closing connection...")
+        self.tello.end()
 
     @staticmethod
     def _inline_print(string, verbose=True):
