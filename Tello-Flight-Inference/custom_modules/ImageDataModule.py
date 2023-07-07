@@ -18,7 +18,7 @@ class ImageDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.batch_size = batch_size
 
-        # Transformations to be applied to our test images
+        # Transformations to be applied to our training images
         self.transform_train = transforms.Compose(
             [
                 transforms.Resize((image_width, image_height)),
