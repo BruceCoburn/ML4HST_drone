@@ -24,7 +24,6 @@ if __name__ == "__main__":
     INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.8571.pt"
     ####################################################################
 
-
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
     ########################################################################
     # Ensure that config.SAVE_IMAGES is set your preference (True/False) PRIOR to running this script
