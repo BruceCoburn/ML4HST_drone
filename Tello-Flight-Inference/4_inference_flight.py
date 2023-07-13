@@ -10,7 +10,7 @@ import queue
 from custom_modules.VideoStreamTello import VideoStreamTello
 from custom_modules.supplemental_functions import nice_print
 from custom_modules.CommandPopup import CommandPopup
-from custom_modules.command_dict import command_dict
+from custom_modules.command_dict import command_dict, master_dict
 from custom_modules import config
 
 # Main script execution
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     ####################################################################
     # Change the following variable to the filename of the .pt file
     # that you wish to use
-    INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.8571.pt"
+    INFERENCE_MODEL_FILENAME = "drone_obstacle_cnn_acc_0.9252.pt"
     ####################################################################
 
     # Create VideoStreamTello() object and automatically start the video stream and user input polling
@@ -39,7 +39,8 @@ if __name__ == "__main__":
 
     # Create a queue to hold commands from the command popup (to handoff to the VideoStreamTello object)
     command_queue = queue.Queue()
-    command_popup = CommandPopup(command_queue=command_queue, command_dict=command_dict)
+    # command_popup = CommandPopup(command_queue=command_queue, command_dict=command_dict)
+    command_popup = CommandPopup(command_queue=command_queue, command_dict=master_dict)
 
     # Enter our main execution loop (can only be exited via a user input
     # 'kill' or KeyboardInterrupt)

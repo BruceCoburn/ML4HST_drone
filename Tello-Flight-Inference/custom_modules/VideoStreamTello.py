@@ -71,6 +71,10 @@ class VideoStreamTello(object):
             "stop_auto_nav": self.stop_auto_nav,
             "inference": self.inference,
             "stop_inference": self.stop_inference,
+            "turn_left": self.turn_left,
+            "turn_right": self.turn_right,
+            "stop": self.stop,
+            "forward": self.forward,
         }
 
         # Create a command dictionary where we expect a single keyword AND a
@@ -143,7 +147,7 @@ class VideoStreamTello(object):
         )
         self.forward_speed = 15  # Forward speed for the drone
         self.turn_speed = 20  # Turn speed for the drone
-        self.turn_wait = 2
+        self.turn_wait = 1
 
         # Setting some attributes which will be necessary for saving frames
         # from the camera feed
@@ -182,6 +186,54 @@ class VideoStreamTello(object):
 
         self.inference_t = Thread(target=self.run_through_inference, args=())
         self.inference_t.start()
+
+    def forward(self):
+        self.run_inference = False
+        self.auto_control = False
+
+        print(f"\tMoving forward...")
+        self.tello.send_rc_control(
+            left_right_velocity=0,
+            forward_backward_velocity=self.forward_speed,
+            up_down_velocity=0,
+            yaw_velocity=0,
+        )
+
+    def stop(self):
+        self.run_inference = False
+        self.auto_control = False
+
+        print(f"\tStopping...")
+        self.tello.send_rc_control(
+            left_right_velocity=0,
+            forward_backward_velocity=0,
+            up_down_velocity=0,
+            yaw_velocity=0,
+        )
+
+    def turn_left(self):
+        self.run_inference = False
+        self.auto_control = False
+
+        print(f"\tTurning left...")
+        self.tello.send_rc_control(
+            left_right_velocity=0,
+            forward_backward_velocity=0,
+            up_down_velocity=0,
+            yaw_velocity=-self.turn_speed,
+        )
+
+    def turn_right(self):
+        self.run_inference = False
+        self.auto_control = False
+
+        print(f"\tTurning right...")
+        self.tello.send_rc_control(
+            left_right_velocity=0,
+            forward_backward_velocity=0,
+            up_down_velocity=0,
+            yaw_velocity=self.turn_speed,
+        )
 
     def auto_nav(self):
         """
@@ -250,48 +302,51 @@ class VideoStreamTello(object):
         """
         Method to collect the most recently saved image from the camera feed, and feed it to the inference model
         """
-        while self.run_inference:
+        while self.main_loop:
+            # while self.run_inference:
             try:
-                # Resize the image to the dimensions expected by the inference model
-                image_width, image_height = self.resize_image_dimensions(
-                    image_width=config.IMAGE_WIDTH,
-                    image_height=config.IMAGE_HEIGHT,
-                    size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
-                )
+                ############################
+                if self.run_inference:
+                    # Resize the image to the dimensions expected by the inference model
+                    image_width, image_height = self.resize_image_dimensions(
+                        image_width=config.IMAGE_WIDTH,
+                        image_height=config.IMAGE_HEIGHT,
+                        size_reduction_factor=config.SIZE_REDUCTION_FACTOR,
+                    )
 
-                # Create the resize transform (passing in 'antialias' parameter to suppress warning)
-                resize_transform = transforms.Resize(
-                    (image_width, image_height), antialias=True
-                )
+                    # Create the resize transform (passing in 'antialias' parameter to suppress warning)
+                    resize_transform = transforms.Resize(
+                        (image_width, image_height), antialias=True
+                    )
 
-                # Store the most recent image from the camera feed
-                inference_image = self.most_recent_image
+                    # Store the most recent image from the camera feed
+                    inference_image = self.most_recent_image
 
-                # Convert the image to a PIL image
-                inference_image = Image.fromarray(inference_image)
+                    # Convert the image to a PIL image
+                    inference_image = Image.fromarray(inference_image)
 
-                # Convert the image to a tensor
-                inference_image = transforms.ToTensor()(inference_image)
+                    # Convert the image to a tensor
+                    inference_image = transforms.ToTensor()(inference_image)
 
-                # Add a batch dimension to the image (Model expects 4D input - originally a 3D input)
-                inference_image = inference_image.unsqueeze(0)
+                    # Add a batch dimension to the image (Model expects 4D input - originally a 3D input)
+                    inference_image = inference_image.unsqueeze(0)
 
-                # Apply the transform to the image prior to feeding it to the inference model
-                resized_image = resize_transform(inference_image)
+                    # Apply the transform to the image prior to feeding it to the inference model
+                    resized_image = resize_transform(inference_image)
 
-                # Feed the image to the inference model
-                blocked_or_unblocked = self.inference_model(resized_image)
-                blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
+                    # Feed the image to the inference model
+                    blocked_or_unblocked = self.inference_model(resized_image)
+                    blocked_or_unblocked = round(blocked_or_unblocked.item(), 4)
 
-                # Update the blocked_or_unblocked attribute
-                self.blocked_or_unblocked = blocked_or_unblocked
+                    # Update the blocked_or_unblocked attribute
+                    self.blocked_or_unblocked = blocked_or_unblocked
 
-                if self.auto_control:
-                    # Automatically control the tello based on the inference output (self.blocked_or_unblocked)
-                    self.auto_control_tello()
+                    if self.auto_control:
+                        # Automatically control the tello based on the inference output (self.blocked_or_unblocked)
+                        self.auto_control_tello()
 
-                # Wait for a bit before trying again
-                time.sleep(self.image_refresh_rate)
+                    # Wait for a bit before trying again
+                    time.sleep(self.image_refresh_rate)
 
             except KeyboardInterrupt:
                 self.run_inference = False
@@ -481,14 +536,14 @@ class VideoStreamTello(object):
                 print(f"Calling {requested_command.__name__}")
                 requested_command()
             except KeyError:
-                print(f"Attempted the following command: {command_list}")
+                print(f"Attempted the following len(1) command: {command_list}")
         elif len(command_list) == 2:
             try:
                 requested_command = self.movement_dictionary[command_list[0]]
                 print(f"Calling {requested_command.__name__} {command_list[1]}")
                 requested_command(int(command_list[1]))
             except KeyError:
-                print(f"Attempted the following command: {command_list}")
+                print(f"Attempted the following len(2) command: {command_list}")
         else:
             print(f"Unrecognized inputs: {command_list}")
 
