@@ -188,7 +188,7 @@ class VideoStreamTello(object):
         self.inference_t.start()
 
     def forward(self):
-        self.run_inference = False
+        self.run_inference = True
         self.auto_control = False
 
         print(f"\tMoving forward...")
@@ -200,7 +200,7 @@ class VideoStreamTello(object):
         )
 
     def stop(self):
-        self.run_inference = False
+        self.run_inference = True
         self.auto_control = False
 
         print(f"\tStopping...")
@@ -212,7 +212,7 @@ class VideoStreamTello(object):
         )
 
     def turn_left(self):
-        self.run_inference = False
+        self.run_inference = True
         self.auto_control = False
 
         print(f"\tTurning left...")
@@ -224,7 +224,7 @@ class VideoStreamTello(object):
         )
 
     def turn_right(self):
-        self.run_inference = False
+        self.run_inference = True
         self.auto_control = False
 
         print(f"\tTurning right...")
